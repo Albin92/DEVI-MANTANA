@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { events } from '../data/events';
 import VasukiDivider from './ui/VasukiDivider';
 import RevealWrapper from './ui/RevealWrapper';
@@ -7,50 +7,35 @@ import EventCard from './EventCard';
 import EventModal from './EventModal';
 
 export default function Events() {
-  const [filter, setFilter] = useState('All');
   const [selectedEvent, setSelectedEvent] = useState(null);
   
-  const categories = ['All', ...new Set(events.map(e => e.category))];
-
-  const filteredEvents = filter === 'All' 
-    ? events 
-    : events.filter(e => e.category === filter);
+  const techEvents = events.filter(e => e.category === 'Technical');
+  const cultEvents = events.filter(e => e.category === 'Cultural');
 
   return (
     <section id="events" className="relative py-24 bg-bg-dark min-h-screen">
       <div className="diagonal-texture" />
       
-      <div className="container mx-auto px-4 relative z-10">
-        <RevealWrapper className="text-center mb-12">
+      <div className="container mx-auto px-4 relative z-10 w-full max-w-[1400px]">
+        <RevealWrapper className="text-center mb-16">
           <div className="text-gold tracking-[4px] text-xs font-bold uppercase mb-4">The Battlefield</div>
-          <h2 className="font-cinzel text-4xl md:text-5xl text-white mb-6">
-            Choose Your <span className="text-primary-light">Arena</span>
+          <h2 className="font-cinzel text-5xl md:text-6xl text-white mb-6" style={{ textShadow: '0 0 30px rgba(245, 197, 24, 0.4)' }}>
+             The <span className="text-primary-light">Trials</span>
           </h2>
           <VasukiDivider />
         </RevealWrapper>
 
-        <RevealWrapper delay={0.2} className="flex flex-wrap justify-center gap-3 mb-16">
-          {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setFilter(cat)}
-              className={`px-5 py-2 rounded-full font-raleway text-sm transition-all duration-300 ${
-                filter === cat 
-                  ? 'bg-gold text-bg-dark font-bold' 
-                  : 'bg-bg-card border border-border-gold text-text-muted hover:border-gold hover:text-gold'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        {/* TECHNICAL SECTION */}
+        <RevealWrapper delay={0.2}>
+          <div className="s-head mb-8" style={{ textAlign: 'left', borderBottom: '1px solid var(--cbl)', paddingBottom: '12px' }}>
+            <p className="s-eye" style={{justifyContent: 'flex-start'}}>⚔ The Forges of Vidya</p>
+            <h2 className="s-title" style={{ fontSize: '2rem' }}>Technical Events</h2>
+          </div>
         </RevealWrapper>
 
-        <motion.div 
-          layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-        >
+        <motion.div layout className="ev-grid mb-24">
           <AnimatePresence>
-            {filteredEvents.map(event => (
+            {techEvents.map(event => (
               <EventCard 
                 key={event.id} 
                 event={event} 
@@ -59,6 +44,30 @@ export default function Events() {
             ))}
           </AnimatePresence>
         </motion.div>
+
+        {/* CULTURAL SECTION */}
+        {cultEvents.length > 0 && (
+          <>
+            <RevealWrapper delay={0.2}>
+              <div className="s-head mb-8" style={{ textAlign: 'left', borderBottom: '1px solid var(--cbl)', paddingBottom: '12px' }}>
+                <p className="s-eye" style={{justifyContent: 'flex-start'}}>✦ The Stage of Colors</p>
+                <h2 className="s-title" style={{ fontSize: '2rem' }}>Cultural Events</h2>
+              </div>
+            </RevealWrapper>
+
+            <motion.div layout className="ev-grid">
+              <AnimatePresence>
+                {cultEvents.map(event => (
+                  <EventCard 
+                    key={event.id} 
+                    event={event} 
+                    onOpenModal={() => setSelectedEvent(event)} 
+                  />
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          </>
+        )}
       </div>
 
       <EventModal 

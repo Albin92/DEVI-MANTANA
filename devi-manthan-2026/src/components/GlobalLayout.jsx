@@ -1,0 +1,314 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+
+export default function GlobalLayout({ children }) {
+  const canvasRef = useRef(null);
+  const curRingRef = useRef(null);
+  const curDotRef = useRef(null);
+  const loaderRef = useRef(null);
+  const navRef = useRef(null);
+  const location = useLocation();
+
+  const [mobOpen, setMobOpen] = useState(false);
+
+  useEffect(() => {
+    // LOADER
+    const loaderTimer = setTimeout(() => {
+      if (loaderRef.current) loaderRef.current.classList.add('out');
+    }, 2200);
+
+    // CURSOR & HOVER
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    let cursorRaf;
+    const handleMouseMove = (e) => {
+      mx = e.clientX;
+      my = e.clientY;
+      if (curDotRef.current) {
+        curDotRef.current.style.left = mx + 'px';
+        curDotRef.current.style.top = my + 'px';
+      }
+      
+      // Update hovering state for cursor ring globally
+      const target = e.target;
+      if (target.closest('a, button, .ec, .cc, .bro-card, .btn-fire, .btn-ghost')) {
+        document.body.classList.add('hovering');
+      } else {
+        document.body.classList.remove('hovering');
+      }
+    };
+    const loopCursor = () => {
+      rx += (mx - rx) * 0.1;
+      ry += (my - ry) * 0.1;
+      if (curRingRef.current) {
+        curRingRef.current.style.left = rx + 'px';
+        curRingRef.current.style.top = ry + 'px';
+      }
+      cursorRaf = requestAnimationFrame(loopCursor);
+    };
+    document.addEventListener('mousemove', handleMouseMove);
+    cursorRaf = requestAnimationFrame(loopCursor);
+
+    // NAVBAR SCROLL
+    const handleScroll = () => {
+      if (navRef.current) {
+        if (window.scrollY > 55) {
+          navRef.current.classList.add('stuck');
+        } else {
+          navRef.current.classList.remove('stuck');
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+
+    // KEYBOARD ESC
+    const handleKey = (e) => { if (e.key === 'Escape') setMobOpen(false); };
+    document.addEventListener('keydown', handleKey);
+
+    return () => {
+      clearTimeout(loaderTimer);
+      document.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(cursorRaf);
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('keydown', handleKey);
+      document.body.classList.remove('hovering');
+    };
+  }, []);
+
+  // VFX CANVAS (Init Once)
+  useEffect(() => {
+    let c = canvasRef.current;
+    let ctx = c?.getContext('2d');
+    let W, H;
+    let canvasRaf;
+    let mpx = 0, mpy = 0;
+    let handleCanvasMouseMove;
+
+    if (c && ctx) {
+      const resizeHandler = () => {
+        W = c.width = window.innerWidth;
+        H = c.height = window.innerHeight;
+      };
+      resizeHandler();
+      window.addEventListener('resize', resizeHandler);
+      
+      // Store reference to cleanly remove listener
+      window.__canvasResizeHandler = resizeHandler;
+
+      const r = (a, b) => Math.random() * (b - a) + a;
+      const SYMS = ['☸', '✦', '◈', '⊕', '⟡', '△', '⬟', '✧'];
+
+      class Arrow {
+        constructor() { this.init(); }
+        init() {
+          this.x = r(0, W); this.y = r(-500, 0); this.l = r(20, 50); this.v = r(15, 25); this.o = r(0.1, 0.4);
+        }
+        tick() {
+          this.y += this.v; if (this.y > H) this.init();
+        }
+        draw() {
+          if(!ctx) return;
+          ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x, this.y + this.l);
+          ctx.strokeStyle = `rgba(245,197,24,${this.o})`; ctx.lineWidth = 1; ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(this.x - 2, this.y + this.l - 5); ctx.lineTo(this.x, this.y + this.l); ctx.lineTo(this.x + 2, this.y + this.l - 5); ctx.stroke();
+        }
+      }
+      class Star { constructor() { this.init(true); } init(i = false) { this.x = r(0, W); this.y = i ? r(0, H) : H + 8; this.rad = r(0.3, 1.4); this.a = r(0.02, 0.16); this.sp = r(0.08, 0.32); this.dr = r(-0.14, 0.14); } tick() { this.y -= this.sp; this.x += this.dr; if (this.y < -8) this.init(); } draw() { if(!ctx) return; ctx.beginPath(); ctx.arc(this.x, this.y, this.rad, 0, Math.PI * 2); ctx.fillStyle = `rgba(245,197,24,${this.a})`; ctx.fill(); } }
+      class Sym { constructor() { this.init(true); } init(i = false) { this.x = r(0, W); this.y = i ? r(0, H) : H + 28; this.ch = SYMS[Math.floor(Math.random() * SYMS.length)]; this.sz = r(8, 18); this.a = r(0.012, 0.058); this.sp = r(0.09, 0.42); this.rot = r(0, Math.PI * 2); this.rs = r(-0.005, 0.005); } tick() { this.y -= this.sp; this.rot += this.rs; if (this.y < -28) this.init(); } draw() { if(!ctx) return; ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rot); ctx.globalAlpha = this.a; ctx.fillStyle = '#F5C518'; ctx.font = this.sz + 'px serif'; ctx.fillText(this.ch, -this.sz / 2, this.sz / 2); ctx.restore(); } }
+      class Dot { constructor() { this.x = r(0, W); this.y = r(0, H); this.vx = r(-0.18, 0.18); this.vy = r(-0.12, 0.12); this.rad = r(0.6, 1.8); this.a = r(0.04, 0.13); } tick() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > W) this.vx *= -1; if (this.y < 0 || this.y > H) this.vy *= -1; } draw() { if(!ctx) return; ctx.beginPath(); ctx.arc(this.x, this.y, this.rad, 0, Math.PI * 2); ctx.fillStyle = `rgba(245,197,24,${this.a})`; ctx.fill(); } }
+
+      const stars = Array.from({ length: 175 }, () => new Star());
+      const syms = Array.from({ length: 50 }, () => new Sym());
+      const dots = Array.from({ length: 85 }, () => new Dot());
+      const arrows = Array.from({ length: 30 }, () => new Arrow());
+
+      handleCanvasMouseMove = (e) => { mpx = e.clientX / W - 0.5; mpy = e.clientY / H - 0.5; };
+      document.addEventListener('mousemove', handleCanvasMouseMove);
+
+      const frame = () => {
+        if(!ctx) return;
+        ctx.clearRect(0, 0, W, H);
+        const g = ctx.createRadialGradient(W / 2 + mpx * 40, H / 2 + mpy * 40, 0, W / 2, H / 2, Math.max(W, H) * 0.8);
+        g.addColorStop(0, 'rgba(255,109,0,.022)'); g.addColorStop(0.4, 'rgba(245,197,24,.008)'); g.addColorStop(1, 'transparent');
+        ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+        arrows.forEach((a) => { a.tick(); a.draw(); });
+        stars.forEach((s) => { s.tick(); s.draw(); });
+        dots.forEach((d) => { d.tick(); d.draw(); });
+        for (let i = 0; i < dots.length; i++) {
+          for (let j = i + 1; j < dots.length; j++) {
+            const dx = dots[i].x - dots[j].x, dy = dots[i].y - dots[j].y, dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 108) {
+              ctx.beginPath(); ctx.moveTo(dots[i].x, dots[i].y); ctx.lineTo(dots[j].x, dots[j].y);
+              ctx.strokeStyle = `rgba(245,197,24,${0.028 * (1 - dist / 108)})`; ctx.lineWidth = 0.5; ctx.stroke();
+            }
+          }
+        }
+        syms.forEach((s) => { s.tick(); s.draw(); });
+        canvasRaf = requestAnimationFrame(frame);
+      };
+      frame();
+    }
+    return () => {
+      if (canvasRaf) cancelAnimationFrame(canvasRaf);
+      if (handleCanvasMouseMove) document.removeEventListener('mousemove', handleCanvasMouseMove);
+      if (window.__canvasResizeHandler) {
+        window.removeEventListener('resize', window.__canvasResizeHandler);
+      }
+    };
+  }, []);
+
+  const handleBrochureClick = (e) => {
+    e.preventDefault();
+    const s = document.createElement('div');
+    Object.assign(s.style, {
+      position: 'fixed', bottom: '28px', left: '50%', transform: 'translateX(-50%) translateY(100px)',
+      background: 'rgba(2,2,13,.97)', border: '1px solid var(--gold)', borderRadius: '8px',
+      padding: '12px 28px', fontFamily: "'Rajdhani',sans-serif", fontSize: '.95rem',
+      color: 'var(--gold)', zIndex: '9000', transition: 'transform .4s cubic-bezier(.34,1.56,.64,1)',
+      backdropFilter: 'blur(12px)', whiteSpace: 'nowrap'
+    });
+    s.textContent = '☸  Brochure download coming soon!';
+    document.body.appendChild(s);
+    setTimeout(() => s.style.transform = 'translateX(-50%) translateY(0)', 10);
+    setTimeout(() => { s.style.transform = 'translateX(-50%) translateY(100px)'; setTimeout(() => s.remove(), 400) }, 3500);
+  };
+
+  const closeMob = () => setMobOpen(false);
+
+  // Helper to determine active link
+  const isActive = (path) => location.pathname === path ? 'active' : '';
+
+  return (
+    <>
+      {/* CURSOR */}
+      <div id="cur-ring" ref={curRingRef}></div>
+      <div id="cur-dot" ref={curDotRef}></div>
+
+      {/* LOADER */}
+      <div id="loader" ref={loaderRef}>
+        <div className="lrw">
+          <div className="lr"></div>
+          <div className="lr"></div>
+          <div className="lr"></div>
+          <div className="lc">☸</div>
+        </div>
+        <p className="lt">Devi · Manthan</p>
+        <div className="lb">
+          <div className="lf"></div>
+        </div>
+      </div>
+
+      {/* CANVAS / FX */}
+      <canvas id="bg-canvas" ref={canvasRef}></canvas>
+
+      {/* FLOATING ELEMENTS */}
+      <div className="f-elem f-bow">
+        <svg viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 50C20 50 60 10 100 10C140 10 180 50 180 50" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4" />
+          <path d="M20 50C20 50 60 90 100 90C140 90 180 50 180 50" stroke="var(--gold)" strokeWidth="4" strokeLinecap="round" />
+          <line x1="20" y1="50" x2="180" y2="50" stroke="var(--gold)" strokeWidth="0.5" opacity="0.5" />
+        </svg>
+      </div>
+      <div className="f-elem f-gada">
+        <svg viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="40" stroke="var(--gold)" strokeWidth="3" />
+          <rect x="45" y="90" width="10" height="100" rx="5" fill="var(--gold)" opacity="0.6" />
+          <path d="M30 30L70 70M70 30L30 70" stroke="var(--gold)" strokeWidth="2" />
+        </svg>
+      </div>
+      <div className="f-elem f-chakra">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="45" stroke="var(--gold)" strokeWidth="1" strokeDasharray="5 5" />
+          <circle cx="50" cy="50" r="30" stroke="var(--gold)" strokeWidth="2" />
+          <path d="M50 5V20M50 80V95M5 50H20M80 50H95" stroke="var(--saff)" strokeWidth="4" strokeLinecap="round" />
+        </svg>
+      </div>
+
+      <div className="noise"></div>
+      <div className="vignette"></div>
+      <div className="glow-line"></div>
+      <div className="glow-line"></div>
+
+      {/* MOBILE NAV */}
+      <div className={`mob ${mobOpen ? 'open' : ''}`}>
+        <button className="mob-x" onClick={closeMob} aria-label="Close">✕</button>
+        <Link to="/" onClick={closeMob}><i className="fa fa-house" style={{fontSize:'.8em', marginRight:'8px'}}></i>Home</Link>
+        <Link to="/events" onClick={closeMob}><i className="fa fa-scroll" style={{fontSize:'.8em', marginRight:'8px'}}></i>Events</Link>
+        <Link to="/about" onClick={closeMob}><i className="fa fa-circle-info" style={{fontSize:'.8em', marginRight:'8px'}}></i>About</Link>
+        <Link to="/register" onClick={closeMob} style={{color:'var(--gold)'}}><i className="fa fa-bolt" style={{fontSize:'.8em', marginRight:'8px'}}></i>Register</Link>
+      </div>
+
+      {/* ════════════ NAVBAR ════════════ */}
+      <nav id="nav" ref={navRef}>
+        <Link to="/" className="nbrand">
+          <i className="fa-solid fa-dharmachakra nbrand-icon"></i>
+          <div>
+            <div className="nbrand-t">DEVI MANTHAN</div>
+            <div className="nbrand-s">2026 · IT FEST</div>
+          </div>
+        </Link>
+
+        <ul className="nmenu">
+          <li><Link to="/" className={isActive('/')}>Home</Link></li>
+          <li><Link to="/events" className={isActive('/events')}>Events</Link></li>
+          <li><Link to="/about" className={isActive('/about')}>About</Link></li>
+          <li><Link to="/register" className="nreg">Register</Link></li>
+        </ul>
+
+        <button className={`ham ${mobOpen ? 'open' : ''}`} onClick={() => setMobOpen(!mobOpen)} aria-label="Menu"><span></span><span></span><span></span></button>
+      </nav>
+
+      {/* MAIN CONTENT WRAPPER */}
+      <main style={{ position: 'relative', zIndex: 10, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        {children}
+      </main>
+
+      {/* ════════════ FOOTER ════════════ */}
+      <footer>
+        <div className="ft-top">
+          <div>
+            <div className="fb-logo"><i className="fa-solid fa-dharmachakra"></i> DEVI MANTHAN 2026</div>
+            <p className="fb-p">The Intercollegiate IT Fest of Shree Devi College of Information Science, Mangaluru. Tradition Rewired. Innovation Unleashed.</p>
+            <div className="ft-soc">
+              <a href="#" aria-label="Instagram"><i className="fa-brands fa-instagram"></i></a>
+              <a href="mailto:" aria-label="Email"><i className="fa-solid fa-envelope"></i></a>
+              <a href="#" aria-label="WhatsApp"><i className="fa-brands fa-whatsapp"></i></a>
+            </div>
+          </div>
+          <div className="ft-col">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><Link to="/"><i className="fa-solid fa-house"></i>Home</Link></li>
+              <li><Link to="/events"><i className="fa-solid fa-scroll"></i>Events</Link></li>
+              <li><Link to="/about"><i className="fa-solid fa-circle-info"></i>About</Link></li>
+              <li><Link to="/register"><i className="fa-solid fa-bolt"></i>Register</Link></li>
+              <li><a href="#" onClick={handleBrochureClick}><i className="fa-solid fa-file-pdf"></i>Brochure</a></li>
+            </ul>
+          </div>
+          <div className="ft-col">
+            <h4>Location</h4>
+            <p className="addr">
+              <i className="fa-solid fa-location-dot"></i>Shree Devi College of<br/>Information Science<br/>
+              <span style={{marginLeft:'20px', display:'block'}}>Ballalbagh, Mangaluru</span>
+              <span style={{marginLeft:'20px', display:'block'}}>Karnataka — 575 003</span>
+            </p>
+            <p className="addr" style={{marginTop:'12px'}}>
+              <i className="fa-solid fa-map"></i><a href="https://maps.google.com" target="_blank" rel="noreferrer" style={{color:'var(--saff)', textDecoration:'none'}}>Get Directions →</a>
+            </p>
+          </div>
+          <div className="ft-col">
+            <h4>Connect</h4>
+            <ul>
+              <li><a href="https://instagram.com" target="_blank" rel="noreferrer"><i className="fa-brands fa-instagram"></i>@devimanthan2026</a></li>
+              <li><a href="mailto:devimanthan@sdcis.ac.in"><i className="fa-solid fa-envelope"></i>devimanthan@sdcis.ac.in</a></li>
+              <li><a href="tel:+91XXXXXXXXXX"><i className="fa-solid fa-phone"></i>+91 XXXXX XXXXX</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="ft-bot">
+          <div className="ft-copy">© 2026 DeviManthan · All Rights Reserved</div>
+          <div className="ft-by">Designed &amp; Developed by <a href="#">LockedIN404</a></div>
+        </div>
+      </footer>
+    </>
+  );
+}

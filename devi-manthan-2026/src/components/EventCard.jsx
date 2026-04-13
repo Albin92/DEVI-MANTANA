@@ -36,28 +36,34 @@ export default function EventCard({ event, onOpenModal }) {
       exit="exit"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="bg-bg-card border border-border-gold rounded-xl p-6 cursor-pointer relative overflow-hidden group transition-all duration-300"
+      className="ec"
     >
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gold/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 pointer-events-none" />
 
-      <span className={`text-xs px-3 py-1 rounded-full font-raleway font-semibold mb-4 inline-block ${categoryStyles[event.category] || categoryStyles.Technical}`}>
+      <span className={`text-xs px-3 py-1 rounded-full font-raleway font-semibold mb-2 inline-block ${categoryStyles[event.category] || categoryStyles.Technical}`} style={{width: 'max-content'}}>
         {event.category}
       </span>
 
-      <div className="text-gold text-4xl mb-3 duration-300 transform group-hover:scale-110 origin-left">{event.icon}</div>
+      {event.imageIcon ? (
+        <div style={{ height: '65px', marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
+          <img src={event.imageIcon} alt={event.name} style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', filter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5))' }} />
+        </div>
+      ) : (
+        <div className="text-gold text-4xl mb-1 duration-300 transform group-hover:scale-110 origin-left" style={{filter: 'drop-shadow(0 0 10px rgba(245, 197, 24, 0.4))'}}>{event.icon}</div>
+      )}
 
-      <h3 className="font-cinzelPlain text-xl text-gold mb-1 font-bold">{event.name}</h3>
+      <h3 className="s-title" style={{fontSize: '1.25rem', marginBottom: '4px'}}>{event.name}</h3>
 
-      <p className="font-raleway italic text-text-muted text-sm mb-3">
+      <p className="font-raleway italic text-text-muted text-sm mb-2" style={{color: 'var(--muted)'}}>
         "{event.tagline}"
       </p>
 
-      <p className="font-raleway text-text-muted text-sm leading-relaxed mb-5 line-clamp-3">
+      <p className="font-raleway text-sm leading-relaxed mb-4 line-clamp-3" style={{color: '#f8f0dc'}}>
         {event.description}
       </p>
 
       <button onClick={() => onOpenModal(event)}
-        className="text-sm font-raleway text-gold border border-border-gold px-4 py-2 rounded-lg group-hover:bg-gold group-hover:text-bg-dark transition-all duration-300">
+        className="btn-ghost" style={{padding: '8px 20px', fontSize: '0.8rem', marginTop: 'auto', alignSelf: 'flex-start'}}>
         View Details →
       </button>
     </motion.article>

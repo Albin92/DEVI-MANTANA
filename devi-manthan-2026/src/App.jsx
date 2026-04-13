@@ -1,38 +1,33 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import CursorTrail from './components/ui/CursorTrail';
+import GlobalLayout from './components/GlobalLayout';
 import HomePage from './pages/HomePage';
 import EventsPage from './pages/EventsPage';
-import LegendsPage from './pages/LegendsPage';
+import AboutPage from './pages/AboutPage';
 import RegisterPage from './pages/RegisterPage';
+import './styles/homeDesign.css'; // Add the global AAA-game design here
 
-function AnimatedRoutes() {
+function AppLayout() {
   const location = useLocation();
+
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/legends" element={<LegendsPage />} />
-        <Route path="/events" element={<EventsPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-      </Routes>
-    </AnimatePresence>
+    <GlobalLayout>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Routes>
+      </AnimatePresence>
+    </GlobalLayout>
   );
 }
 
 function App() {
   return (
     <Router>
-      <div className="font-raleway min-h-screen flex flex-col relative">
-        <CursorTrail />
-        <Navbar />
-        <main className="flex-grow pt-20">
-          <AnimatedRoutes />
-        </main>
-        <Footer />
-      </div>
+      <AppLayout />
     </Router>
   );
 }

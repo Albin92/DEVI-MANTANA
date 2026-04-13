@@ -1,82 +1,98 @@
 import React from 'react';
-import { FaCrown, FaCode, FaBug, FaCamera, FaCompass, FaChalkboardUser, FaGamepad, FaRocket, FaBrain, FaGlobe, FaMicrochip } from 'react-icons/fa6';
 
 export const events = [
+  // ════════════ TECHNICAL EVENTS ════════════ 
   {
-    id: 1, name: 'NETRUTVA', subtitle: 'Krishna\'s Strategy (IT Manager)',
-    icon: <FaCrown />, category: 'Management',
+    id: 1, 
+    name: 'SUTRADHARA', 
+    subtitle: 'IT Manager',
+    imageIcon: '/events/sutradhara.png',
+    category: 'Technical',
     tagline: 'Lead with Vision. Decide with Precision.',
     description: 'Test your leadership, strategic thinking, and IT management skills in real-world simulated scenarios, guided by the wisdom of the Divine Strategist.',
-    rules: 'Teams of 2–3 | Registration required | Finals on Day 2'
+    rules: `1. Individual event — solo participation only.
+2. Formal attire is mandatory; casual clothing is strictly not allowed.
+3. Each participant must bring a working laptop with charger.
+4. Professional conduct is mandatory; misconduct results in disqualification.
+5. All instructions from coordinators and judges must be followed — their decisions are final.`,
+    eventHeads: [
+      { role: 'Head', name: 'Rohan Bhandary', phone: '+91 83568 02086', photo: null },
+      { role: 'Head', name: 'Tulsi Mendon', phone: '+91 93807 59180', photo: null }
+    ]
   },
   {
-    id: 2, name: 'SRIJAN', subtitle: 'Vishwakarma\'s Forge (Coding)',
-    icon: <FaCode />, category: 'Technical',
-    tagline: 'Where Ideas Transform into Code.',
-    description: 'Bring your algorithms to life. Solve complex problems under pressure and prove your programming prowess in the celestial forge.',
-    rules: 'Individual or pairs | Language of choice | Proctored environment'
-  },
-  {
-    id: 3, name: 'SAMADHAN', subtitle: 'Arjuna\'s Focus (Debugging)',
-    icon: <FaBug />, category: 'Technical',
-    tagline: 'Decode Problems. Deliver Solutions.',
-    description: 'Hunt down bugs with the unmatched focus of Arjuna. Fix broken code and emerge as the ultimate problem-solver in the debugging arena.',
-    rules: 'Individual | Multiple rounds | Timed elimination'
-  },
-  {
-    id: 4, name: 'DRISHTI', subtitle: 'Sanjaya\'s Vision (Photography)',
-    icon: <FaCamera />, category: 'Creative',
-    tagline: 'See Beyond. Capture the Unseen.',
-    description: 'Frame stories through your lens with the divine sight of Sanjaya. Compete in photography and short video creation challenges.',
-    rules: 'Individual | Own device | Theme announced on event day'
-  },
-  {
-    id: 5, name: 'ANVESHAN', subtitle: 'Sahadeva\'s Quest (Treasure Hunt)',
-    icon: <FaCompass />, category: 'Fun',
-    tagline: 'Search Smart. Discover More.',
-    description: 'Navigate clues, decode puzzles, and race your team to uncover the hidden treasure across the campus battlefield.',
-    rules: 'Teams of 3 | Campus-wide | Physical + digital clues'
-  },
-  {
-    id: 6, name: 'PRASTUTI', subtitle: 'Yudhishthira\'s Wisdom (Tech Presentation)',
-    icon: <FaChalkboardUser />, category: 'Technical',
-    tagline: 'Present Ideas. Inspire Minds.',
-    description: 'Showcase your research and tech ideas to a panel of expert judges. Clarity, truth, and confidence win here.',
-    rules: 'Teams of 2 | 10-minute presentation + 5-minute Q&A'
-  },
-  {
-    id: 7, name: 'SPARDHA', subtitle: 'Bheema\'s Might (Gaming Tournament)',
-    icon: <FaGamepad />, category: 'Gaming',
-    tagline: 'Compete. Conquer. Dominate.',
-    description: 'Enter the digital battlefield. Compete in popular gaming titles and prove your reflexes and strategy with unstoppable might.',
-    rules: 'Individual or teams | Games announced on Day 1 | Knock-out format'
-  },
-  {
-    id: 8, name: 'NAVONMESH', subtitle: 'Karna\'s Arsenal (Product Launch)',
-    icon: <FaRocket />, category: 'Innovation',
-    tagline: 'Innovate Today. Launch Tomorrow.',
-    description: 'Pitch your unique product concept or startup idea. Present an arsenal of innovative features to a live audience and jury.',
-    rules: 'Teams of 2–4 | 7-minute pitch | Prototype or deck required'
-  },
-  {
-    id: 9, name: 'MEDHA', subtitle: 'Vidura\'s Intellect (Quiz Competition)',
-    icon: <FaBrain />, category: 'Technical',
-    tagline: 'Knowledge is Power. Prove Yours.',
-    description: 'A multi-round quiz spanning technology, current affairs, science, and logical reasoning demanding impeccable intellect.',
-    rules: 'Teams of 2 | Prelims + Finals | Buzzer round included'
-  },
-  {
-    id: 10, name: "ASTRACODERS", subtitle: 'Drona\'s Legacy (Web Design)',
-    icon: <FaGlobe />, category: 'Technical',
+    id: 2, 
+    name: 'ASTRACODERS', 
+    subtitle: 'Drona\'s Legacy (Web Design)',
+    imageIcon: '/events/astracoders.png',
+    category: 'Technical',
     tagline: 'Weave Webs. Win Battles.',
     description: "Design and build responsive, creative websites. Inspired by Drona's legacy — master your craft, shape the digital battlefield.",
-    rules: 'Individual or pairs | 3-hour build | Theme given on the day'
+    rules: `1. Individual or pairs allowed.
+2. 3-hour build time strictly enforced.
+3. The specific design theme will be provided on the spot.
+4. Use of pre-made templates is strictly forbidden.
+5. Bring your own development environment / laptops.`,
+    eventHeads: [
+      { role: 'Head', name: 'Rohan Bhandary', phone: '+91 83568 02086', photo: null },
+      { role: 'Head', name: 'Tulsi Mendon', phone: '+91 93807 59180', photo: null }
+    ]
   },
   {
-    id: 11, name: 'YANTRA SPARSHA', subtitle: 'Nakula\'s Craft (Hardware & IoT)',
-    icon: <FaMicrochip />, category: 'Innovation',
-    tagline: 'Build the Future. Touch Tomorrow.',
-    description: 'Design and present hardware prototypes or IoT solutions that solve real-world problems. Where circuits meet creativity.',
-    rules: 'Teams of 2–3 | Working prototype preferred | 8-minute demo slot'
+    id: 3, 
+    name: 'VYUHANTARA', 
+    subtitle: 'Treasure Hunt',
+    imageIcon: '/events/vyuhantara.png',
+    category: 'Technical',
+    tagline: 'Pass the Trials. Enter the Vyuh. Claim the Treasure.',
+    description: 'Navigate clues, decode puzzles, and race your team to uncover the hidden treasure across the campus battlefield.',
+    rules: `1. Teams of exactly 3 members.
+2. Physical and digital clues will be scattered across the campus.
+3. Tampering with other teams' clues leads to instant disqualification.
+4. Time limit applies to specific zones. Let your instincts guide you.`,
+    eventHeads: [
+      { role: 'Head', name: 'Rohan Bhandary', phone: '+91 83568 02086', photo: null },
+      { role: 'Head', name: 'Tulsi Mendon', phone: '+91 93807 59180', photo: null }
+    ]
+  },
+  {
+    id: 4, 
+    name: 'SPARDHA', 
+    subtitle: 'BGMI CHAMPIONSHIP',
+    imageIcon: '/events/spardha.png',
+    category: 'Technical',
+    tagline: 'COMPETE. CONQUER. DOMINATE.',
+    description: 'THE DHARMA OF BATTLE: Warriors of Bharatvarsha, heed the call! SPARDHA summons the bravest clans to the BGMI Kurukshetra. This is not merely a contest; it is a profound test of Valor, Strategy, and Survival. Drop into the legendary arenas of Erangel and Miramar, where destiny is forged in fire and steel. Let your tactics mirror the chakravyuh, your arrows (bullets) find their mark. Rise above the ordinary, outlast 96 rivals, and claim the ultimate WINNER WINNER CHICKEN DINNER - the crown of the supreme Chakravarti.',
+    rules: `1. THE WARRIOR CLAN: Each Akshauhini (Squad) must consist of 4 brave warriors.
+2. SACRED ARMAMENT: Mobile weapons only. Use of Celestial Emulators, Tablets, or Divyasutras (Hacks/GFX) is strictly forbidden on pain of banishment.
+3. VIGILANCE: Arrive at the custom room 10 minutes before dawn (start time).
+4. SCORING: 1 Karma (Point) per Finish. Victory (WWCD) grants 10 Placement Points.
+5. THE HONOR CODE: Maintain 'Dharma'. No teaming with rival clans. Violators face permanent disqualification.
+6. ETERNAL RECORD: Team Captains must submit screenshots of the final battle (Match Results) for divine verification.
+7. THE FINAL DECREE: The decision of the SPARDHA Sabha (Organizing Committee) is final and binding.`,
+    eventHeads: [
+      { role: 'Head', name: 'Rohan Bhandary', phone: '+91 83568 02086', photo: null },
+      { role: 'Head', name: 'Tulsi Mendon', phone: '+91 93807 59180', photo: null }
+    ]
+  },
+
+  // ════════════ CULTURAL EVENTS ════════════
+  {
+    id: 5, 
+    name: 'ROOPAYANTRA', 
+    subtitle: 'Tech Walk',
+    imageIcon: '/events/roopayantra.png',
+    category: 'Cultural',
+    tagline: 'Where Technology meets Fashion.',
+    description: 'A dazzling technical fashion walk bringing digital concepts to the runway. Dress your clan representing futuristic or mythological tech themes.',
+    rules: `1. Teams of 4-8 members.
+2. Maximum stage time is 5 minutes including setup.
+3. Tech/Mythology fusion theme is strictly required for styling.
+4. Provide your background audio track on a USB drive before the event starts.
+5. Decisions of the judges will be final and binding.`,
+    eventHeads: [
+      { role: 'Head', name: 'Rohan Bhandary', phone: '+91 83568 02086', photo: null },
+      { role: 'Head', name: 'Tulsi Mendon', phone: '+91 93807 59180', photo: null }
+    ]
   }
 ];
