@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #C0392B;
+  --primary-light: #E74C3C;
+  --secondary: #D4AF37;
+  --secondary-light: #F5D76E;
+  --accent: #8E44AD;
+  --accent-teal: #1ABC9C;
+  --bg-dark: #0A0409;
+  --bg-card: #110818;
+  --bg-surface: #1A0E24;
+  --text-primary: #F5F0E8;
+  --text-muted: #B8A9C9;
+  --border-gold: rgba(212, 175, 55, 0.4);
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-gold);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+
+/* Text selections */
+::selection {
+  background-color: rgba(212, 175, 55, 0.3);
+  color: #FFF;
+}
+
+/* Mandala background art setup */
+.mandala-bg {
+  position: relative;
+}
+.mandala-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image: radial-gradient(circle at center, rgba(212,175,55,0.5) 0%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Diagonal texture */
+.diagonal-texture {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.02) 10px, rgba(255,255,255,0.02) 20px);
+  z-index: 0;
+  pointer-events: none;
+}
