@@ -8,7 +8,6 @@ const faqs = [
   { q: "Is there a registration fee?", a: "Registration details including fees (if any) will be announced soon. Contact coordinators for the latest info." },
   { q: "Can one student participate in multiple events?", a: "Yes, participants may register for multiple events subject to schedule availability." },
   { q: "What is the team size for events?", a: "Team sizes vary by event — individual to groups of 3. Check each event's details for specifics." },
-  { q: "Are there prizes?", a: "Yes! Winners receive cash prizes and certificates. Prize details will be announced soon." },
   { q: "How do we reach the venue?", a: "Shree Devi College of Information Science, Mangaluru. Exact address and map link available in the Contact section." },
   { q: "Will there be food and refreshments?", a: "Yes, refreshments will be available on campus during the fest." },
   { q: "Can we register on the spot?", a: "Prior online registration is encouraged. On-spot registration is subject to availability — contact coordinators to confirm." }
@@ -29,7 +28,7 @@ export default function FAQ() {
           {faqs.map((faq, idx) => (
             <RevealWrapper key={idx} delay={idx * 0.1}>
               <div className="border-b border-border-gold overflow-hidden">
-                <button 
+                <button
                   className="w-full flex justify-between items-center py-5 text-left font-cinzelPlain text-text-primary hover:text-gold transition-colors text-lg"
                   onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
                 >
