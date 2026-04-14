@@ -1,7 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function EventModal({ event, isOpen, onClose }) {
+  const navigate = useNavigate();
+
   if (!isOpen || !event) return null;
 
   const rulesList = event.rules ? event.rules.split('\n').filter(r => r.trim() !== '') : [];
@@ -12,16 +15,15 @@ export default function EventModal({ event, isOpen, onClose }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-[#02020D]/98 z-[100002] flex items-center justify-center p-2 md:p-4 backdrop-blur-xl"
+        className="fixed inset-0 bg-[#02020D]/98 z-[100002] flex items-start justify-center p-4 md:p-8 backdrop-blur-xl overflow-y-auto"
         onClick={onClose}
-        style={{ overflowY: 'auto' }}
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0, y: 50 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="ancient-modal max-w-6xl w-full relative flex flex-col md:flex-row gap-0 md:gap-10 my-4 md:my-8 rounded-lg"
+          className="ancient-modal max-w-6xl w-full relative flex flex-col md:flex-row gap-0 md:gap-10 my-auto md:my-10 rounded-lg shadow-2xl h-fit shrink-0"
           onClick={e => e.stopPropagation()}
         >
           {/* ORNAMENTS */}
@@ -180,8 +182,7 @@ export default function EventModal({ event, isOpen, onClose }) {
               <button
                 onClick={() => {
                   onClose();
-                  const regBtn = document.getElementById('register');
-                  if (regBtn) regBtn.scrollIntoView({ behavior: 'smooth' });
+                  navigate('/register');
                 }}
                 className="bg-transparent border-2 border-[var(--gold)] text-[var(--gold)] font-orbitron font-bold text-xs px-10 py-4 rounded-sm hover:bg-[var(--gold)] hover:text-black transition-all duration-300 shadow-[0_0_20px_rgba(245,197,24,0.1)] hover:shadow-[0_0_30px_rgba(245,197,24,0.3)] relative overflow-hidden group"
               >
