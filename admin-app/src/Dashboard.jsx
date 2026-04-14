@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Users, Search, CheckCircle, XCircle, LogOut, ChevronDown, ChevronRight, User, LayoutGrid } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Users, Search, CheckCircle, XCircle, LogOut, ChevronDown, ChevronRight, User, LayoutGrid, RefreshCw, Download } from 'lucide-react';
 import { supabase } from '../supabaseClient'; 
 
 // Structured mock data
@@ -29,57 +29,102 @@ const mockRegistrations = [
     }
 ];
 
-export default function Dashboard() {
+export default function Dashboard({ onLogout }) {
     const [registrations, setRegistrations] = useState([]);
     const [expandedRows, setExpandedRows] = useState({});
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [usingMock, setUsingMock] = useState(false);
+    const [updatingId, setUpdatingId] = useState(null); // tracks which row is being updated
 
     // Fetch real data from Supabase
-    useEffect(() => {
-        async function fetchRealData() {
-            setLoading(true);
-            try {
-                const { data, error } = await supabase
-                    .from('registrations')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+    const fetchRealData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('registrations')
+                .select('*')
+                .order('created_at', { ascending: false });
 
-                if (error) {
-                    console.warn('Supabase error:', error.message, '— using mock data.');
-                    setRegistrations(mockRegistrations);
-                    setUsingMock(true);
-                } else if (data && data.length > 0) {
-                    // Map Supabase rows → component format
-                    const mapped = data.map((reg) => ({
-                        id: reg.id,
-                        leaderName:    reg.leader_name,
-                        leaderPhone:   reg.leader_phone,
-                        leaderEmail:   reg.leader_email,
-                        college:       reg.college,
-                        paymentStatus: reg.payment_status,
-                        totalAmount:   `₹${reg.total_amount}`,
-                        createdAt:     new Date(reg.created_at).toLocaleDateString('en-IN'),
-                        participants:  Array.isArray(reg.participants) ? reg.participants : [],
-                    }));
-                    setRegistrations(mapped);
-                    setUsingMock(false);
-                } else {
-                    // Table exists but has no rows yet — still show mock for UI preview
-                    setRegistrations(mockRegistrations);
-                    setUsingMock(true);
-                }
-            } catch (err) {
-                console.error('Supabase connection error:', err);
+            if (error) {
+                console.warn('Supabase error:', error.message, '— using mock data.');
                 setRegistrations(mockRegistrations);
                 setUsingMock(true);
-            } finally {
-                setLoading(false);
+            } else if (data && data.length > 0) {
+                // Map Supabase rows → component format
+                const mapped = data.map((reg) => ({
+                    id: reg.id,
+                    leaderName:    reg.leader_name,
+                    leaderPhone:   reg.leader_phone,
+                    leaderEmail:   reg.leader_email,
+                    college:       reg.college,
+                    paymentStatus: reg.payment_status,
+                    totalAmount:   reg.total_amount != null
+                            ? `₹${reg.total_amount}`
+                            : `₹${(Array.isArray(reg.participants) ? reg.participants.length : 0) * 200}`,
+                    createdAt:     new Date(reg.created_at).toLocaleDateString('en-IN'),
+                    participants:  Array.isArray(reg.participants) ? reg.participants : [],
+                }));
+                setRegistrations(mapped);
+                setUsingMock(false);
+            } else {
+                // Table exists but has no rows yet — still show mock for UI preview
+                setRegistrations(mockRegistrations);
+                setUsingMock(true);
             }
+        } catch (err) {
+            console.error('Supabase connection error:', err);
+            setRegistrations(mockRegistrations);
+            setUsingMock(true);
+        } finally {
+            setLoading(false);
         }
-        fetchRealData();
     }, []);
+
+    useEffect(() => { fetchRealData(); }, [fetchRealData]);
+
+    // Toggle payment status in Supabase
+    const updatePaymentStatus = async (team) => {
+        if (usingMock) return; // can't update mock data
+        const newStatus = team.paymentStatus === 'Verified' ? 'Pending' : 'Verified';
+        setUpdatingId(team.id);
+        try {
+            const { error } = await supabase
+                .from('registrations')
+                .update({ payment_status: newStatus })
+                .eq('id', team.id);
+            if (error) throw error;
+            // Optimistically update local state
+            setRegistrations(prev => prev.map(r =>
+                r.id === team.id ? { ...r, paymentStatus: newStatus } : r
+            ));
+        } catch (err) {
+            console.error('Update error:', err);
+            alert('Failed to update status: ' + err.message);
+        } finally {
+            setUpdatingId(null);
+        }
+    };
+
+    // Export CSV
+    const exportCSV = () => {
+        const rows = [['Reg ID', 'College', 'Leader Name', 'Leader Phone', 'Leader Email', 'Participants', 'Total Amount', 'Payment Status', 'Date']];
+        registrations.forEach(r => {
+            const partNames = r.participants.map(p => `${p.name} (${p.event})`).join(' | ');
+            rows.push([
+                r.id, r.college, r.leaderName, r.leaderPhone || '', r.leaderEmail || '',
+                partNames, r.totalAmount, r.paymentStatus, r.createdAt || ''
+            ]);
+        });
+        const csvContent = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `devi-manthan-registrations-${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
 
     const toggleRow = (id) => {
         setExpandedRows(prev => ({ ...prev, [id]: !prev[id] }));
@@ -111,10 +156,36 @@ export default function Dashboard() {
                             <p className="text-zinc-400 text-sm font-medium tracking-wide">Registration Overview</p>
                         </div>
                     </div>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-zinc-300 hover:text-amber-400 transition-all duration-300">
-                        <LogOut size={18} />
-                        <span className="text-sm font-bold tracking-wide">LOGOUT</span>
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            id="refresh-btn"
+                            onClick={fetchRealData}
+                            className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-zinc-300 hover:text-emerald-400 transition-all duration-300"
+                            title="Refresh data"
+                        >
+                            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+                            <span className="text-sm font-bold tracking-wide hidden sm:inline">REFRESH</span>
+                        </button>
+                        {!usingMock && (
+                            <button
+                                id="export-btn"
+                                onClick={exportCSV}
+                                className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-xl text-emerald-400 hover:text-emerald-300 transition-all duration-300"
+                                title="Export CSV"
+                            >
+                                <Download size={16} />
+                                <span className="text-sm font-bold tracking-wide hidden sm:inline">EXPORT</span>
+                            </button>
+                        )}
+                        <button
+                            id="logout-btn"
+                            onClick={onLogout}
+                            className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-zinc-300 hover:text-red-400 transition-all duration-300"
+                        >
+                            <LogOut size={18} />
+                            <span className="text-sm font-bold tracking-wide hidden sm:inline">LOGOUT</span>
+                        </button>
+                    </div>
                 </header>
 
                 {/* Tools and Search */}
@@ -158,7 +229,7 @@ export default function Dashboard() {
                             <div className="col-span-3">College</div>
                             <div className="col-span-2">Team Leader</div>
                             <div className="col-span-2">Amount</div>
-                            <div className="col-span-2">Status</div>
+                            <div className="col-span-2">Status / Action</div>
                         </div>
 
                         {/* Loading state */}
@@ -192,7 +263,7 @@ export default function Dashboard() {
                                                 {team.leaderName}
                                             </div>
                                             <div className="col-span-2 text-zinc-300 font-mono bg-white/5 px-3 py-1 rounded w-fit">{team.totalAmount}</div>
-                                            <div className="col-span-2">
+                                            <div className="col-span-2 flex items-center gap-2 flex-wrap">
                                                 {team.paymentStatus === 'Verified' ? (
                                                     <span className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold tracking-wide bg-emerald-400/10 border border-emerald-400/20 px-3 py-1.5 rounded-lg w-fit shadow-[0_0_10px_rgba(52,211,153,0.1)]">
                                                         <CheckCircle size={14} /> VERIFIED
@@ -201,6 +272,19 @@ export default function Dashboard() {
                                                     <span className="flex items-center gap-1.5 text-amber-400 text-xs font-bold tracking-wide bg-amber-400/10 border border-amber-400/20 px-3 py-1.5 rounded-lg w-fit shadow-[0_0_10px_rgba(251,191,36,0.1)]">
                                                         <XCircle size={14} /> PENDING
                                                     </span>
+                                                )}
+                                                {!usingMock && (
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); updatePaymentStatus(team); }}
+                                                        disabled={updatingId === team.id}
+                                                        className={`text-[9px] font-bold tracking-widest uppercase px-2 py-1 rounded border transition-all duration-200 ${
+                                                            team.paymentStatus === 'Verified'
+                                                                ? 'border-red-500/30 text-red-400 bg-red-500/10 hover:bg-red-500/20'
+                                                                : 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20'
+                                                        } disabled:opacity-40 disabled:cursor-not-allowed`}
+                                                    >
+                                                        {updatingId === team.id ? '...' : team.paymentStatus === 'Verified' ? 'Mark Pending' : 'Mark Verified'}
+                                                    </button>
                                                 )}
                                             </div>
                                         </div>
