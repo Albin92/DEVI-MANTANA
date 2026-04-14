@@ -3,8 +3,8 @@ import React from 'react';
 export const events = [
   // ════════════ TECHNICAL EVENTS ════════════ 
   {
-    id: 1, 
-    name: 'SUTRADHARA', 
+    id: 1,
+    name: 'SUTRADHARA',
     subtitle: 'IT Manager',
     imageIcon: '/events/sutradhara.png',
     category: 'Technical',
@@ -21,8 +21,8 @@ export const events = [
     ]
   },
   {
-    id: 2, 
-    name: 'ASTRACODERS', 
+    id: 2,
+    name: 'ASTRACODERS',
     subtitle: 'Drona\'s Legacy (Web Design)',
     imageIcon: '/events/astracoders.png',
     category: 'Technical',
@@ -39,8 +39,8 @@ export const events = [
     ]
   },
   {
-    id: 3, 
-    name: 'VYUHANTARA', 
+    id: 3,
+    name: 'VYUHANTARA',
     subtitle: 'Treasure Hunt',
     imageIcon: '/events/vyuhantara.png',
     category: 'Technical',
@@ -56,8 +56,8 @@ export const events = [
     ]
   },
   {
-    id: 4, 
-    name: 'SPARDHA', 
+    id: 4,
+    name: 'SPARDHA',
     subtitle: 'BGMI CHAMPIONSHIP',
     imageIcon: '/events/spardha.png',
     category: 'Technical',
@@ -78,8 +78,8 @@ export const events = [
 
   // ════════════ CULTURAL EVENTS ════════════
   {
-    id: 5, 
-    name: 'ROOPAYANTRA', 
+    id: 5,
+    name: 'ROOPAYANTRA',
     subtitle: 'Tech Walk',
     imageIcon: '/events/roopayantra.png',
     category: 'Cultural',

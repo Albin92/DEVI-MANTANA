@@ -10,6 +10,7 @@ export default function GlobalLayout({ children }) {
   const location = useLocation();
 
   const [mobOpen, setMobOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
 
   useEffect(() => {
     // LOADER
@@ -48,7 +49,7 @@ export default function GlobalLayout({ children }) {
     document.addEventListener('mousemove', handleMouseMove);
     cursorRaf = requestAnimationFrame(loopCursor);
 
-    // NAVBAR SCROLL
+    // NAVBAR SCROLL & SECTION WATCHER
     const handleScroll = () => {
       if (navRef.current) {
         if (window.scrollY > 55) {
@@ -59,6 +60,35 @@ export default function GlobalLayout({ children }) {
       }
     };
     window.addEventListener('scroll', handleScroll);
+
+    // Intersection Observer for Scroll Spy
+    const observerOptions = {
+      root: null,
+      rootMargin: '-10% 0px -85% 0px', // Smaller, higher focal zone
+      threshold: [0, 0.1]
+    };
+
+    const handleIntersect = (entries) => {
+      // Force hero at the very top
+      if (window.scrollY < 80) {
+        setActiveSection('hero');
+        return;
+      }
+
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(handleIntersect, observerOptions);
+    const sections = ['hero', 'events', 'about', 'register'];
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
 
     // KEYBOARD ESC
     const handleKey = (e) => { if (e.key === 'Escape') setMobOpen(false); };
@@ -71,8 +101,9 @@ export default function GlobalLayout({ children }) {
       window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('keydown', handleKey);
       document.body.classList.remove('hovering');
+      observer.disconnect();
     };
-  }, []);
+  }, [location.pathname]); // Re-observe when path changes as new sections might be rendered
 
   // VFX CANVAS (Init Once)
   useEffect(() => {
@@ -175,7 +206,35 @@ export default function GlobalLayout({ children }) {
   const closeMob = () => setMobOpen(false);
 
   // Helper to determine active link
-  const isActive = (path) => location.pathname === path ? 'active' : '';
+  const isActive = (path) => {
+    const sectionMapping = {
+      '/': 'hero',
+      '/events': 'events',
+      '/about': 'about',
+      '/register': 'register'
+    };
+    
+    // If the scroll-tracked section matches the path's intended section, it's active
+    if (activeSection === sectionMapping[path]) return 'active';
+    
+    // Fallback to strict pathname match for static navigation
+    return location.pathname === path ? 'active' : '';
+  };
+
+  // Smooth scroll handler
+  const handleNavClick = (e, targetId, path) => {
+    const el = document.getElementById(targetId);
+    if (el && location.pathname === '/') {
+      e.preventDefault();
+      el.scrollIntoView({ behavior: 'smooth' });
+      closeMob();
+    } else if (el && path === location.pathname) {
+       // On non-home pages if the section exists (e.g. /events page has #events)
+       e.preventDefault();
+       el.scrollIntoView({ behavior: 'smooth' });
+       closeMob();
+    }
+  };
 
   return (
     <>
@@ -231,15 +290,15 @@ export default function GlobalLayout({ children }) {
       {/* MOBILE NAV */}
       <div className={`mob ${mobOpen ? 'open' : ''}`}>
         <button className="mob-x" onClick={closeMob} aria-label="Close">✕</button>
-        <Link to="/" onClick={closeMob}><i className="fa fa-house" style={{fontSize:'.8em', marginRight:'8px'}}></i>Home</Link>
+        <Link to="/" onClick={(e) => { handleNavClick(e, 'hero', '/'); closeMob(); }}><i className="fa fa-house" style={{fontSize:'.8em', marginRight:'8px'}}></i>Home</Link>
         <Link to="/events" onClick={closeMob}><i className="fa fa-scroll" style={{fontSize:'.8em', marginRight:'8px'}}></i>Events</Link>
-        <Link to="/about" onClick={closeMob}><i className="fa fa-circle-info" style={{fontSize:'.8em', marginRight:'8px'}}></i>About</Link>
-        <Link to="/register" onClick={closeMob} style={{color:'var(--gold)'}}><i className="fa fa-bolt" style={{fontSize:'.8em', marginRight:'8px'}}></i>Register</Link>
+        <Link to="/about" onClick={(e) => { handleNavClick(e, 'about', '/about'); closeMob(); }}><i className="fa fa-circle-info" style={{fontSize:'.8em', marginRight:'8px'}}></i>About</Link>
+        <Link to="/register" onClick={(e) => { handleNavClick(e, 'register', '/register'); closeMob(); }} style={{color:'var(--gold)'}}><i className="fa fa-bolt" style={{fontSize:'.8em', marginRight:'8px'}}></i>Register</Link>
       </div>
 
       {/* ════════════ NAVBAR ════════════ */}
       <nav id="nav" ref={navRef}>
-        <Link to="/" className="nbrand">
+        <Link to="/" className="nbrand" onClick={(e) => handleNavClick(e, 'hero', '/')}>
           <i className="fa-solid fa-dharmachakra nbrand-icon"></i>
           <div>
             <div className="nbrand-t">DEVI MANTHAN</div>
@@ -248,10 +307,10 @@ export default function GlobalLayout({ children }) {
         </Link>
 
         <ul className="nmenu">
-          <li><Link to="/" className={isActive('/')}>Home</Link></li>
+          <li><Link to="/" className={isActive('/')} onClick={(e) => handleNavClick(e, 'hero', '/')}>Home</Link></li>
           <li><Link to="/events" className={isActive('/events')}>Events</Link></li>
-          <li><Link to="/about" className={isActive('/about')}>About</Link></li>
-          <li><Link to="/register" className="nreg">Register</Link></li>
+          <li><Link to="/about" className={isActive('/about')} onClick={(e) => handleNavClick(e, 'about', '/about')}>About</Link></li>
+          <li><Link to="/register" className={`nreg ${isActive('/register')}`} onClick={(e) => handleNavClick(e, 'register', '/register')}>Register</Link></li>
         </ul>
 
         <button className={`ham ${mobOpen ? 'open' : ''}`} onClick={() => setMobOpen(!mobOpen)} aria-label="Menu"><span></span><span></span><span></span></button>
