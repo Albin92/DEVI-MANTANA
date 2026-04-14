@@ -380,7 +380,7 @@ export default function GlobalLayout({ children }) {
       {/* ════════════ NAVBAR ════════════ */}
       <nav id="nav" ref={navRef}>
         <Link to="/" className="nbrand" onClick={(e) => handleNavClick(e, 'hero', '/')}>
-          <i className="fa-solid fa-dharmachakra nbrand-icon"></i>
+          <img src="/main logo/logo.png" alt="Devi Manthan Logo" className="nlogo" />
           <div>
             <div className="nbrand-t">DEVI MANTHAN</div>
             <div className="nbrand-s">2026 · IT FEST</div>
