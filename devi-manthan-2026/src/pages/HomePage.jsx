@@ -70,7 +70,7 @@ export default function HomePage() {
       transition={{ duration: 0.8 }}
       style={{ flexGrow: 1, position: 'relative', overflow: 'hidden', backgroundColor: 'var(--ink)' }}
     >
-      <section id="hero" style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+      <section id="hero" style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
 
         {/* LAYER 1: Deep Ethereal Shadow Character */}
         <div style={{ position: 'absolute', inset: -50, zIndex: 1, pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.3 }}>

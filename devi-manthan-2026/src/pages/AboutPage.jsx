@@ -1,5 +1,60 @@
 import React, { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+
+const CoordinatorCard = ({ img, name, role, dept, delayClass }) => {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x);
+  const mouseYSpring = useSpring(y);
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["10deg", "-10deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-10deg", "10deg"]);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      className={`cc-spider r ${delayClass}`}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX,
+        rotateY,
+        transformStyle: "preserve-3d",
+        perspective: "1000px"
+      }}
+    >
+      <div className="cc-inner">
+        <div className="cav-photo">
+          <img src={img} alt={name} className="cav-img" />
+          <div className="cav-overlay"></div>
+          <div className="cav-stippling"></div>
+        </div>
+        <div className="cc-details">
+          <div className="crole">{role}</div>
+          <div className="cname">{name}</div>
+          {dept && <div className="cdept">{dept}</div>}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 export default function AboutPage() {
   const containerRef = useRef(null);
@@ -111,23 +166,21 @@ export default function AboutPage() {
             <h2 className="s-title">Staff Coordinators</h2>
             <p className="s-desc">The faculty vanguard guiding the Digital Kurukshetra.</p>
           </div>
-          <div className="coord-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', maxWidth: '640px', margin: '0 auto', gap: '32px' }}>
-            <div className="cc r rd1">
-              <div className="cav-photo">
-                <img src="/staff/divya.png" alt="Dr Divya Naveen" className="cav-img" />
-              </div>
-              <div className="cname">Dr Divya Naveen</div>
-              <div className="crole">Staff Coordinator</div>
-              <div className="cdept">Dept. of Information Science<br />Shree Devi College</div>
-            </div>
-            <div className="cc r rd2">
-              <div className="cav-photo">
-                <img src="/staff/jeevanya.png" alt="Jeevanya L Poojary" className="cav-img" />
-              </div>
-              <div className="cname">Jeevanya L Poojary</div>
-              <div className="crole">Staff Coordinator</div>
-              <div className="cdept">Dept. of Information Science<br />Shree Devi College</div>
-            </div>
+          <div className="coord-grid-spider">
+            <CoordinatorCard
+              img="/staff/divya.png"
+              name="Dr Divya Naveen"
+              role="Staff Coordinator"
+
+              delayClass="rd1"
+            />
+            <CoordinatorCard
+              img="/staff/jeevanya.png"
+              name="Jeevanya L Poojary"
+              role="Staff Coordinator"
+
+              delayClass="rd2"
+            />
           </div>
         </div>
       </section>
@@ -142,23 +195,19 @@ export default function AboutPage() {
             <h2 className="s-title">Student Coordinators</h2>
             <p className="s-desc">The student leaders who drive every faction into battle.</p>
           </div>
-          <div className="coord-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', maxWidth: '640px', margin: '0 auto', gap: '32px' }}>
-            <div className="cc r rd1">
-              <div className="cav-photo" style={{ background: 'linear-gradient(135deg, var(--gold3), var(--gold))' }}>
-                <img src="/student/manya.png" alt="Manya M" className="cav-img" />
-              </div>
-              <div className="cname">Manya M</div>
-              <div className="crole">Student Coordinator</div>
-              <div className="cdept">Final Year · BCA<br />Shree Devi College</div>
-            </div>
-            <div className="cc r rd2">
-              <div className="cav-photo" style={{ background: 'linear-gradient(135deg, var(--gold3), var(--gold))' }}>
-                <img src="/student/prajwal.png" alt="Prajwal K" className="cav-img" />
-              </div>
-              <div className="cname">Prajwal K</div>
-              <div className="crole">Student Coordinator</div>
-              <div className="cdept">Final Year · BCA<br />Shree Devi College</div>
-            </div>
+          <div className="coord-grid-spider">
+            <CoordinatorCard
+              img="/student/manyanew.png"
+              name="Manya M"
+              role="Student Coordinator"
+              delayClass="rd1"
+            />
+            <CoordinatorCard
+              img="/student/prajwal.png"
+              name="Prajwal K"
+              role="Student Coordinator"
+              delayClass="rd2"
+            />
           </div>
         </div>
       </section>

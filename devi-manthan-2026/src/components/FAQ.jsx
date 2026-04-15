@@ -5,8 +5,8 @@ import RevealWrapper from './ui/RevealWrapper';
 
 const faqs = [
   { q: "Who can participate in Devi-Manthan 2026?", a: "The fest is open to all intercollegiate students across Karnataka and beyond." },
-  { q: "Is there a registration fee?", a: "Registration details including fees (if any) will be announced soon. Contact coordinators for the latest info." },
-  { q: "Can one student participate in multiple events?", a: "Yes, participants may register for multiple events subject to schedule availability." },
+  { q: "Is there a registration fee?", a: "No, registration is completely free!." },
+  { q: "Can one student participate in multiple events?", a: "No, one participant is limited to one event." },
   { q: "What is the team size for events?", a: "Team sizes vary by event — individual to groups of 3. Check each event's details for specifics." },
   { q: "How do we reach the venue?", a: "Shree Devi College of Information Science, Mangaluru. Exact address and map link available in the Contact section." },
   { q: "Will there be food and refreshments?", a: "Yes, refreshments will be available on campus during the fest." },
