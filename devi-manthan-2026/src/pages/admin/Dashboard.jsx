@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Users, Search, CheckCircle, XCircle, LogOut, ChevronDown, ChevronRight, User, LayoutGrid, RefreshCw, Download } from 'lucide-react';
+import { Users, Search, CheckCircle, XCircle, LogOut, ChevronDown, ChevronRight, User, LayoutGrid, RefreshCw, Download, Trash2 } from 'lucide-react';
 import { supabase } from '../../supabaseClient'; 
 
 // Structured mock data
@@ -101,6 +101,33 @@ export default function Dashboard({ onLogout }) {
         } catch (err) {
             console.error('Update error:', err);
             alert('Failed to update status: ' + err.message);
+        } finally {
+            setUpdatingId(null);
+        }
+    };
+
+    // Delete completely from Supabase
+    const deleteRegistration = async (id, e) => {
+        e.stopPropagation();
+        if (usingMock) {
+            alert('Cannot delete mock data.');
+            return;
+        }
+        if (!window.confirm("Are you sure you want to completely delete this registration? This cannot be undone.")) return;
+        
+        setUpdatingId(id);
+        try {
+            const { error } = await supabase
+                .from('registrations')
+                .delete()
+                .eq('id', id);
+            if (error) throw error;
+            
+            // Optimistically remove from state
+            setRegistrations(prev => prev.filter(r => r.id !== id));
+        } catch (err) {
+            console.error('Delete error:', err);
+            alert('Failed to delete: ' + err.message);
         } finally {
             setUpdatingId(null);
         }
@@ -274,17 +301,27 @@ export default function Dashboard({ onLogout }) {
                                                     </span>
                                                 )}
                                                 {!usingMock && (
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); updatePaymentStatus(team); }}
-                                                        disabled={updatingId === team.id}
-                                                        className={`text-[9px] font-bold tracking-widest uppercase px-2 py-1 rounded border transition-all duration-200 ${
-                                                            team.paymentStatus === 'Verified'
-                                                                ? 'border-red-500/30 text-red-400 bg-red-500/10 hover:bg-red-500/20'
-                                                                : 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20'
-                                                        } disabled:opacity-40 disabled:cursor-not-allowed`}
-                                                    >
-                                                        {updatingId === team.id ? '...' : team.paymentStatus === 'Verified' ? 'Mark Pending' : 'Mark Verified'}
-                                                    </button>
+                                                    <div className="flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); updatePaymentStatus(team); }}
+                                                            disabled={updatingId === team.id}
+                                                            className={`text-[9px] font-bold tracking-widest uppercase px-2 py-1 rounded border transition-all duration-200 ${
+                                                                team.paymentStatus === 'Verified'
+                                                                    ? 'border-zinc-500/30 text-zinc-400 bg-zinc-500/10 hover:bg-zinc-500/20'
+                                                                    : 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20'
+                                                            } disabled:opacity-40 disabled:cursor-not-allowed`}
+                                                        >
+                                                            {updatingId === team.id ? '...' : team.paymentStatus === 'Verified' ? 'Mark Pending' : 'Mark Verified'}
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => deleteRegistration(team.id, e)}
+                                                            disabled={updatingId === team.id}
+                                                            className="text-[9px] font-bold tracking-widest uppercase px-2 py-1 rounded border border-red-500/30 text-red-400 bg-red-500/10 hover:bg-red-500/20 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center"
+                                                            title="Delete Registration"
+                                                        >
+                                                            <Trash2 size={12} className="inline-block" />
+                                                        </button>
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>
