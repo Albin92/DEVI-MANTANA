@@ -10,7 +10,7 @@ const EVENT_CONFIG = {
   "CHAKRAVYUHA (Quiz)": { members: 2, type: "Team", weapon: "Vyuha" },
   "VISHWAKARMA (Product Launch)": { members: 2, type: "Team", weapon: "Karta" },
   "ASTRACODERS (Web Designing)": { members: 2, type: "Team", weapon: "Shilpa" },
-  "ROOPAYANTRA (Tech Walk)": { members: 10, type: "Solo", weapon: "Drishti" }
+  "ROOPAYANTRA (Tech Walk)": { members: 6, type: "Team", weapon: "Drishti" }
 };
 
 

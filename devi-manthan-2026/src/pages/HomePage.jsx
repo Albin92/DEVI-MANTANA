@@ -34,6 +34,8 @@ export default function HomePage() {
     setTimeout(() => { s.style.transform = 'translateX(-50%) translateY(100px)'; setTimeout(() => s.remove(), 400) }, 3500);
   };
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   // Movie-poster title typography style
   const epicTitleStyle = {
     fontFamily: "'Cinzel Decorative', serif",
@@ -50,7 +52,7 @@ export default function HomePage() {
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
-    filter: "drop-shadow(0 20px 20px rgba(0,0,0,0.9)) drop-shadow(0 0 60px rgba(245, 197, 24, 0.3))",
+    filter: isMobile ? "drop-shadow(0 4px 6px rgba(0,0,0,0.9))" : "drop-shadow(0 20px 20px rgba(0,0,0,0.9)) drop-shadow(0 0 60px rgba(245, 197, 24, 0.3))",
     letterSpacing: "clamp(-1px, -0.3vw, -4px)",
     margin: "10px 0"
   };
@@ -59,7 +61,7 @@ export default function HomePage() {
     fontSize: "clamp(2.5rem, 8vw, 8rem)",
     WebkitTextFillColor: "var(--saff)",
     background: "none",
-    filter: "drop-shadow(0 0 40px rgba(255, 109, 0, 0.8))",
+    filter: isMobile ? "none" : "drop-shadow(0 0 40px rgba(255, 109, 0, 0.8))",
     marginInline: "15px"
   };
 
@@ -77,10 +79,10 @@ export default function HomePage() {
         <div style={{ position: 'absolute', inset: -50, zIndex: 1, pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.3 }}>
           <motion.img
             src="/hero_bg_arjuna.png"
-            initial={{ filter: 'blur(30px)', scale: 1.1 }}
-            animate={{ filter: 'blur(4px)', scale: 1 }}
+            initial={{ filter: isMobile ? 'none' : 'blur(30px)', scale: 1.1 }}
+            animate={{ filter: isMobile ? 'none' : 'blur(4px)', scale: 1 }}
             transition={{ duration: 5, ease: "easeOut" }}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', mixBlendMode: 'screen' }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', mixBlendMode: isMobile ? 'normal' : 'screen' }}
             alt="Mythological Aura"
           />
           {/* Dark edge vignette so the character fades smoothly */}

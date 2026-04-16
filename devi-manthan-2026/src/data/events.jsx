@@ -57,7 +57,7 @@ export const events = [
     category: 'Cultural',
     tagline: 'Where Technology meets Fashion.',
     description: 'A dazzling technical fashion walk bringing digital concepts to the runway. Dress your clan representing futuristic themes.',
-    rules: `1. Each team must consist of 6–10 members.
+    rules: `1. Each team must consist of 5-6 members.
 2. Costumes should be creative, tech-inspired, and preferably eco-friendly.
 3. Use of dangerous or inappropriate props is strictly prohibited.
 4. Music must be submitted in advance to the organizing team.
