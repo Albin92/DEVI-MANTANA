@@ -16,8 +16,10 @@ function AppLayout() {
   useEffect(() => {
     if (isAdminRoute) {
       document.body.classList.add('admin-mode');
+      document.documentElement.classList.add('admin-mode');
     } else {
       document.body.classList.remove('admin-mode');
+      document.documentElement.classList.remove('admin-mode');
     }
   }, [isAdminRoute]);
 
