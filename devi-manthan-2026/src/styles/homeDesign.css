@@ -16,6 +16,10 @@
     --cbs: rgba(245, 197, 24, .32);
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 html,
 body {
     background: var(--ink);

@@ -28,6 +28,13 @@ export default function GlobalLayout({ children }) {
     };
     window.addEventListener('resize', handleResize);
 
+    // Attempt automatic fullscreen strictly on load (Note: Browsers block this without kiosk flags/user interaction)
+    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.warn(`Fullscreen API on load blocked by browser security: ${err.message}`);
+      });
+    }
+
     // Cinematic Auto-Fullscreen on first interaction
     const handleFirstInteraction = () => {
       if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
@@ -439,7 +446,7 @@ export default function GlobalLayout({ children }) {
         {children}
       </main>
 
-      {/* ════════════ FOOTER ════════════ */}
+      {/* ════════════ FOOTER SYSTEM ════════════ */}
       <footer>
         <div className="ft-top">
           <div>
