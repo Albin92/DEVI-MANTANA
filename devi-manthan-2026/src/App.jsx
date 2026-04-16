@@ -28,7 +28,6 @@ function AppLayout() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/admin" element={<AdminPage/>} />
         </Routes>
       </AnimatePresence>
     </GlobalLayout>
