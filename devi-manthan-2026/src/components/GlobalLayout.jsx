@@ -28,7 +28,7 @@ export default function GlobalLayout({ children }) {
     // LOADER
     const loaderTimer = setTimeout(() => {
       if (loaderRef.current) loaderRef.current.classList.add('out');
-    }, 2200);
+    }, 400);
 
     // CURSOR & HOVER (Only on Desktop)
     let mx = 0, my = 0, rx = 0, ry = 0;
@@ -184,10 +184,11 @@ export default function GlobalLayout({ children }) {
       class Sym { constructor() { this.init(true); } init(i = false) { this.x = r(0, W); this.y = i ? r(0, H) : H + 28; this.ch = SYMS[Math.floor(Math.random() * SYMS.length)]; this.sz = r(8, 18); this.a = r(0.012, 0.058); this.sp = r(0.09, 0.42); this.rot = r(0, Math.PI * 2); this.rs = r(-0.005, 0.005); } tick() { this.y -= this.sp; this.rot += this.rs; if (this.y < -28) this.init(); } draw() { if(!ctx) return; ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rot); ctx.globalAlpha = this.a; ctx.fillStyle = '#F5C518'; ctx.font = this.sz + 'px serif'; ctx.fillText(this.ch, -this.sz / 2, this.sz / 2); ctx.restore(); } }
       class Dot { constructor() { this.x = r(0, W); this.y = r(0, H); this.vx = r(-0.18, 0.18); this.vy = r(-0.12, 0.12); this.rad = r(0.6, 1.8); this.a = r(0.04, 0.13); } tick() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > W) this.vx *= -1; if (this.y < 0 || this.y > H) this.vy *= -1; } draw() { if(!ctx) return; ctx.beginPath(); ctx.arc(this.x, this.y, this.rad, 0, Math.PI * 2); ctx.fillStyle = `rgba(245,197,24,${this.a})`; ctx.fill(); } }
 
-      const stars = Array.from({ length: 175 }, () => new Star());
-      const syms = Array.from({ length: 50 }, () => new Sym());
-      const dots = Array.from({ length: 85 }, () => new Dot());
-      const arrows = Array.from({ length: 30 }, () => new Arrow());
+      const isMobileCanvas = window.innerWidth < 768;
+      const stars = Array.from({ length: isMobileCanvas ? 60 : 175 }, () => new Star());
+      const syms = Array.from({ length: isMobileCanvas ? 20 : 50 }, () => new Sym());
+      const dots = Array.from({ length: isMobileCanvas ? 30 : 85 }, () => new Dot());
+      const arrows = Array.from({ length: isMobileCanvas ? 10 : 30 }, () => new Arrow());
 
       handleCanvasMouseMove = (e) => { mpx = e.clientX / W - 0.5; mpy = e.clientY / H - 0.5; };
       document.addEventListener('mousemove', handleCanvasMouseMove);
@@ -306,7 +307,7 @@ export default function GlobalLayout({ children }) {
 
       {/* CELESTIAL ATMOSPHERE: SPARKS */}
       <div className="celestial-overlay">
-        {[...Array(20)].map((_, i) => (
+        {[...Array(isDesktop ? 20 : 8)].map((_, i) => (
           <motion.div
             key={i}
             className="spark"

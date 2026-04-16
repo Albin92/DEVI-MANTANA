@@ -94,6 +94,9 @@ html, body {
 
 /* ══════════════════════════════════════════ MOBILE TWEAKS */
 @media (max-width: 768px) {
+    .noise {
+        display: none !important;
+    }
     #hero {
         padding-top: 80px;
     }
@@ -194,20 +197,23 @@ body.hovering #cur-ring {
     border-top-color: var(--gold);
     border-right-color: var(--saff);
     animation: rspin 1.4s linear infinite;
-    box-shadow: 0 0 28px rgba(245, 197, 24, .22)
+    box-shadow: 0 0 28px rgba(245, 197, 24, .22);
+    will-change: transform;
 }
 
 .lr:nth-child(2) {
     inset: 14px;
     border-bottom-color: var(--cyan);
     border-left-color: var(--violet);
-    animation: rspin .9s linear infinite reverse
+    animation: rspin .9s linear infinite reverse;
+    will-change: transform;
 }
 
 .lr:nth-child(3) {
     inset: 28px;
     border-top-color: var(--ember);
-    animation: rspin 1.8s linear infinite
+    animation: rspin 1.8s linear infinite;
+    will-change: transform;
 }
 
 .lc {
@@ -308,7 +314,8 @@ body.hovering #cur-ring {
     background: linear-gradient(90deg, transparent, rgba(245, 197, 24, .15) 30%, rgba(245, 197, 24, .5) 50%, rgba(245, 197, 24, .15) 70%, transparent);
     pointer-events: none;
     z-index: 2;
-    animation: scanline 8s ease-in-out infinite
+    animation: scanline 8s ease-in-out infinite;
+    will-change: transform, opacity;
 }
 
 .glow-line:nth-child(2) {
@@ -766,7 +773,8 @@ nav#nav.stuck {
     background: radial-gradient(ellipse, rgba(255, 109, 0, .12) 0%, rgba(245, 197, 24, .05) 35%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
-    animation: breathe 5s ease-in-out infinite
+    animation: breathe 5s ease-in-out infinite;
+    will-change: transform;
 }
 
 @keyframes breathe {
@@ -795,7 +803,8 @@ nav#nav.stuck {
     width: min(400px, 88vw);
     height: min(400px, 88vw);
     border-color: rgba(245, 197, 24, .08);
-    animation: orbspin 18s linear infinite
+    animation: orbspin 18s linear infinite;
+    will-change: transform;
 }
 
 .orb:nth-child(2) {
@@ -1656,6 +1665,8 @@ footer {
     pointer-events: none;
     z-index: 1;
     opacity: 0.15;
+    will-change: transform;
+    transform: translateZ(0);
     transition: transform 0.1s ease-out;
     filter: drop-shadow(0 0 10px var(--gold));
 }
@@ -1736,6 +1747,8 @@ footer {
     background: var(--gold);
     border-radius: 50%;
     filter: blur(1px) drop-shadow(0 0 5px var(--saff));
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 .f-feather {

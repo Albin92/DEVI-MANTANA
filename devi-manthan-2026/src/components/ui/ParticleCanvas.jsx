@@ -14,13 +14,13 @@ export default function ParticleCanvas() {
     camera.position.y = 10;
     camera.lookAt(0, 0, 0);
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: window.innerWidth > 768 });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 2));
     mountRef.current.appendChild(renderer.domElement);
 
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 2000;
+    const particlesCount = window.innerWidth < 768 ? 600 : 2000;
     const posArray = new Float32Array(particlesCount * 3);
     const colorsArray = new Float32Array(particlesCount * 3);
 
@@ -55,7 +55,8 @@ export default function ParticleCanvas() {
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
 
-    const oceanGeometry = new THREE.PlaneGeometry(100, 100, 50, 50);
+    const segments = window.innerWidth < 768 ? 20 : 50;
+    const oceanGeometry = new THREE.PlaneGeometry(100, 100, segments, segments);
     const oceanMaterial = new THREE.MeshBasicMaterial({ 
       color: 0x1A0E24, 
       wireframe: true, 

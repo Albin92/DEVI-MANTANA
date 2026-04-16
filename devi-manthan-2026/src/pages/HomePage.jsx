@@ -133,7 +133,7 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9, filter: 'blur(20px)' }}
             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-            transition={{ duration: 2, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0 }}
             style={{ width: '100%', padding: '0 20px' }}
           >
             <h1 style={epicTitleStyle}>
