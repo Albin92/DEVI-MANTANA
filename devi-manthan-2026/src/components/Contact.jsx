@@ -22,7 +22,7 @@ export default function Contact() {
             <p className="font-raleway text-gold italic mb-6">"Churning Tradition into Technology"</p>
 
             <div className="flex gap-3">
-              {[FaInstagram, FaLinkedinIn, FaWhatsapp].map((Icon, idx) => (
+              {[FaInstagram].map((Icon, idx) => (
                 <motion.a
                   key={idx}
                   href="#"
@@ -37,6 +37,11 @@ export default function Contact() {
 
           <RevealWrapper delay={0.2} className="lg:pl-8">
             <h4 className="font-cinzelPlain text-gold text-lg mb-6">Quick Links</h4>
+            <ul className="space-y-3 mb-8">
+                <li><a href="#faq" className="font-raleway text-text-muted hover:text-gold transition-colors flex items-center gap-2"><FaChevronRight className="text-xs text-gold" /> FAQ</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); alert('Rules & Regulations coming soon!'); }} className="font-raleway text-text-muted hover:text-gold transition-colors flex items-center gap-2"><FaChevronRight className="text-xs text-gold" /> Rules and Regulation</a></li>
+            </ul>
+
             <h4 className="font-cinzelPlain text-gold text-lg mb-6">Get In Touch</h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3 font-raleway text-text-muted">

@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
+import TouchFeedback from './ui/TouchFeedback';
+import ScrollProgress from './ui/ScrollProgress';
 
 export default function GlobalLayout({ children }) {
   const canvasRef = useRef(null);
@@ -10,8 +12,23 @@ export default function GlobalLayout({ children }) {
   const navRef = useRef(null);
   const location = useLocation();
 
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, {stiffness: 100, damping: 30});
+  const bowY = useTransform(smoothProgress, [0, 1], [0, -150]);
+  const gadaY = useTransform(smoothProgress, [0, 1], [0, 200]);
+  const chakraY = useTransform(smoothProgress, [0, 1], [0, -80]);
+
   const [mobOpen, setMobOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 1024);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth > 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     // LOADER
@@ -19,9 +36,10 @@ export default function GlobalLayout({ children }) {
       if (loaderRef.current) loaderRef.current.classList.add('out');
     }, 2200);
 
-    // CURSOR & HOVER
+    // CURSOR & HOVER (Only on Desktop)
     let mx = 0, my = 0, rx = 0, ry = 0;
     let cursorRaf;
+
     const handleMouseMove = (e) => {
       mx = e.clientX;
       my = e.clientY;
@@ -30,7 +48,6 @@ export default function GlobalLayout({ children }) {
         curDotRef.current.style.top = my + 'px';
       }
       
-      // Update hovering state for cursor ring globally
       const target = e.target;
       if (target.closest('a, button, .ec, .cc, .bro-card, .btn-fire, .btn-ghost')) {
         document.body.classList.add('hovering');
@@ -38,6 +55,7 @@ export default function GlobalLayout({ children }) {
         document.body.classList.remove('hovering');
       }
     };
+
     const loopCursor = () => {
       rx += (mx - rx) * 0.1;
       ry += (my - ry) * 0.1;
@@ -47,10 +65,11 @@ export default function GlobalLayout({ children }) {
       }
       cursorRaf = requestAnimationFrame(loopCursor);
     };
-    document.addEventListener('mousemove', handleMouseMove);
-    cursorRaf = requestAnimationFrame(loopCursor);
 
-    cursorRaf = requestAnimationFrame(loopCursor);
+    if (isDesktop) {
+      document.addEventListener('mousemove', handleMouseMove);
+      cursorRaf = requestAnimationFrame(loopCursor);
+    }
 
     // NAVBAR SCROLL
     const handleScroll = () => {
@@ -118,18 +137,21 @@ export default function GlobalLayout({ children }) {
     return () => {
       clearTimeout(loaderTimer);
       clearInterval(obsInterval);
-      document.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(cursorRaf);
+      if (isDesktop) {
+        document.removeEventListener('mousemove', handleMouseMove);
+        cancelAnimationFrame(cursorRaf);
+      }
       window.removeEventListener('scroll', handleScroll);
       document.removeEventListener('keydown', handleKey);
       document.body.classList.remove('hovering');
       observer.disconnect();
     };
-  }, [location.pathname]); // Re-observe when path changes as new sections might be rendered
+  }, [location.pathname, isDesktop]); // Re-observe when path changes or device modes swap
 
   // VFX CANVAS (Init Once)
   useEffect(() => {
     let c = canvasRef.current;
+    if (!c || window.innerWidth < 768) return;
     let ctx = c?.getContext('2d');
     let W, H;
     let canvasRaf;
@@ -169,10 +191,11 @@ export default function GlobalLayout({ children }) {
       class Sym { constructor() { this.init(true); } init(i = false) { this.x = r(0, W); this.y = i ? r(0, H) : H + 28; this.ch = SYMS[Math.floor(Math.random() * SYMS.length)]; this.sz = r(8, 18); this.a = r(0.012, 0.058); this.sp = r(0.09, 0.42); this.rot = r(0, Math.PI * 2); this.rs = r(-0.005, 0.005); } tick() { this.y -= this.sp; this.rot += this.rs; if (this.y < -28) this.init(); } draw() { if(!ctx) return; ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rot); ctx.globalAlpha = this.a; ctx.fillStyle = '#F5C518'; ctx.font = this.sz + 'px serif'; ctx.fillText(this.ch, -this.sz / 2, this.sz / 2); ctx.restore(); } }
       class Dot { constructor() { this.x = r(0, W); this.y = r(0, H); this.vx = r(-0.18, 0.18); this.vy = r(-0.12, 0.12); this.rad = r(0.6, 1.8); this.a = r(0.04, 0.13); } tick() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > W) this.vx *= -1; if (this.y < 0 || this.y > H) this.vy *= -1; } draw() { if(!ctx) return; ctx.beginPath(); ctx.arc(this.x, this.y, this.rad, 0, Math.PI * 2); ctx.fillStyle = `rgba(245,197,24,${this.a})`; ctx.fill(); } }
 
-      const stars = Array.from({ length: 175 }, () => new Star());
-      const syms = Array.from({ length: 50 }, () => new Sym());
-      const dots = Array.from({ length: 85 }, () => new Dot());
-      const arrows = Array.from({ length: 30 }, () => new Arrow());
+      const isMobileCanvas = window.innerWidth < 768;
+      const stars = Array.from({ length: isMobileCanvas ? 60 : 175 }, () => new Star());
+      const syms = Array.from({ length: isMobileCanvas ? 20 : 50 }, () => new Sym());
+      const dots = Array.from({ length: isMobileCanvas ? 30 : 85 }, () => new Dot());
+      const arrows = Array.from({ length: isMobileCanvas ? 10 : 30 }, () => new Arrow());
 
       handleCanvasMouseMove = (e) => { mpx = e.clientX / W - 0.5; mpy = e.clientY / H - 0.5; };
       document.addEventListener('mousemove', handleCanvasMouseMove);
@@ -264,6 +287,10 @@ export default function GlobalLayout({ children }) {
 
   return (
     <>
+      {/* MOBILE ENHANCEMENTS */}
+      {!isDesktop && <TouchFeedback />}
+      {!isDesktop && <ScrollProgress />}
+
       {/* CURSOR */}
       <div id="cur-ring" ref={curRingRef}></div>
       <div id="cur-dot" ref={curDotRef}></div>
@@ -287,7 +314,7 @@ export default function GlobalLayout({ children }) {
 
       {/* CELESTIAL ATMOSPHERE: SPARKS */}
       <div className="celestial-overlay">
-        {[...Array(20)].map((_, i) => (
+        {[...Array(isDesktop ? 20 : 8)].map((_, i) => (
           <motion.div
             key={i}
             className="spark"
@@ -312,56 +339,64 @@ export default function GlobalLayout({ children }) {
       </div>
 
       {/* FLOATING WEAPONS WITH PARALLAX */}
-      <motion.div className="f-elem f-bow" style={{ y: useTransform(useSpring(useScroll().scrollYProgress, {stiffness:100, damping:30}), [0,1], [0, -150]) }}>
-        <svg viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20 50C20 50 60 10 100 10C140 10 180 50 180 50" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4" />
-          <path d="M20 50C20 50 60 90 100 90C140 90 180 50 180 50" stroke="var(--gold)" strokeWidth="4" strokeLinecap="round" />
-          <line x1="20" y1="50" x2="180" y2="50" stroke="var(--gold)" strokeWidth="0.5" opacity="0.5" />
-        </svg>
-      </motion.div>
-      <motion.div className="f-elem f-gada" style={{ y: useTransform(useSpring(useScroll().scrollYProgress, {stiffness:100, damping:30}), [0,1], [0, 200]) }}>
-        <svg viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="50" cy="50" r="40" stroke="var(--gold)" strokeWidth="3" />
-          <rect x="45" y="90" width="10" height="100" rx="5" fill="var(--gold)" opacity="0.6" />
-          <path d="M30 30L70 70M70 30L30 70" stroke="var(--gold)" strokeWidth="2" />
-        </svg>
-      </motion.div>
-      <motion.div className="f-elem f-chakra" style={{ y: useTransform(useSpring(useScroll().scrollYProgress, {stiffness:100, damping:30}), [0,1], [0, -80]) }}>
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="50" cy="50" r="45" stroke="var(--gold)" strokeWidth="1" strokeDasharray="5 5" />
-          <circle cx="50" cy="50" r="30" stroke="var(--gold)" strokeWidth="2" />
-          <path d="M50 5V20M50 80V95M5 50H20M80 50H95" stroke="var(--saff)" strokeWidth="4" strokeLinecap="round" />
-        </svg>
-      </motion.div>
+      {isDesktop && (
+        <>
+          <motion.div className="f-elem f-bow" style={{ y: bowY }}>
+            <svg viewBox="0 0 200 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 50C20 50 60 10 100 10C140 10 180 50 180 50" stroke="var(--gold)" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4" />
+              <path d="M20 50C20 50 60 90 100 90C140 90 180 50 180 50" stroke="var(--gold)" strokeWidth="4" strokeLinecap="round" />
+              <line x1="20" y1="50" x2="180" y2="50" stroke="var(--gold)" strokeWidth="0.5" opacity="0.5" />
+            </svg>
+          </motion.div>
+          <motion.div className="f-elem f-gada" style={{ y: gadaY }}>
+            <svg viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="40" stroke="var(--gold)" strokeWidth="3" />
+              <rect x="45" y="90" width="10" height="100" rx="5" fill="var(--gold)" opacity="0.6" />
+              <path d="M30 30L70 70M70 30L30 70" stroke="var(--gold)" strokeWidth="2" />
+            </svg>
+          </motion.div>
+          <motion.div className="f-elem f-chakra" style={{ y: chakraY }}>
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="45" stroke="var(--gold)" strokeWidth="1" strokeDasharray="5 5" />
+              <circle cx="50" cy="50" r="30" stroke="var(--gold)" strokeWidth="2" />
+              <path d="M50 5V20M50 80V95M5 50H20M80 50H95" stroke="var(--saff)" strokeWidth="4" strokeLinecap="round" />
+            </svg>
+          </motion.div>
+        </>
+      )}
 
       {/* MAYUR PANKH (PEACOCK FEATHER) */}
-      <motion.div 
-        className="f-elem f-feather"
-        animate={{ 
-          rotate: [0, 5, -5, 0],
-          x: [0, 20, -10, 0],
-          y: [0, -15, 10, 0]
-        }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <svg viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M50 180 Q45 140 50 100 Q55 60 50 20" stroke="var(--gold)" strokeWidth="1.5" opacity="0.4" />
-          <ellipse cx="50" cy="50" rx="25" ry="40" stroke="var(--saff)" strokeWidth="1.5" opacity="0.3" />
-          <path d="M50 30 C35 30 30 50 50 75 C70 50 65 30 50 30" fill="var(--gold)" opacity="0.1" />
-        </svg>
-      </motion.div>
+      {isDesktop && (
+        <motion.div 
+          className="f-elem f-feather"
+          animate={{ 
+            rotate: [0, 5, -5, 0],
+            x: [0, 20, -10, 0],
+            y: [0, -15, 10, 0]
+          }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <svg viewBox="0 0 100 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50 180 Q45 140 50 100 Q55 60 50 20" stroke="var(--gold)" strokeWidth="1.5" opacity="0.4" />
+            <ellipse cx="50" cy="50" rx="25" ry="40" stroke="var(--saff)" strokeWidth="1.5" opacity="0.3" />
+            <path d="M50 30 C35 30 30 50 50 75 C70 50 65 30 50 30" fill="var(--gold)" opacity="0.1" />
+          </svg>
+        </motion.div>
+      )}
 
       {/* GHOSTLY SCROLLING SHLOKAS */}
-      <div className="shloka-ghost-v">
-        <div className="shloka-track">
-           <span>॥ कर्मण्येवाधिकारस्ते मा फलेषु कदाचन ॥</span>
-           <span>◈</span>
-           <span>॥ धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः ॥</span>
-           <span>◈</span>
-           <span>॥ यतो धर्मस्ततो जयः ॥</span>
-           <span>◈</span>
+      {isDesktop && (
+        <div className="shloka-ghost-v">
+          <div className="shloka-track">
+             <span>॥ कर्मण्येवाधिकारस्ते मा फलेषु कदाचन ॥</span>
+             <span>◈</span>
+             <span>॥ धर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः ॥</span>
+             <span>◈</span>
+             <span>॥ यतो धर्मस्ततो जयः ॥</span>
+             <span>◈</span>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="noise"></div>
       <div className="vignette"></div>

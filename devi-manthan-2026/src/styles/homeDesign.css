@@ -21,9 +21,14 @@ html, body {
     color: var(--white);
     font-family: 'Rajdhani', sans-serif;
     overflow-x: hidden;
-    cursor: none;
     min-height: 100vh;
     width: 100%;
+}
+
+@media (min-width: 1025px) {
+    html, body {
+        cursor: none;
+    }
 }
 
 *,
@@ -89,6 +94,9 @@ html, body {
 
 /* ══════════════════════════════════════════ MOBILE TWEAKS */
 @media (max-width: 768px) {
+    .noise {
+        display: none !important;
+    }
     #hero {
         padding-top: 80px;
     }
@@ -138,6 +146,12 @@ html, body {
     box-shadow: 0 0 8px var(--saff)
 }
 
+@media (max-width: 1024px) {
+    #cur-ring, #cur-dot {
+        display: none !important;
+    }
+}
+
 body.hovering #cur-ring {
     width: 58px;
     height: 58px;
@@ -183,20 +197,23 @@ body.hovering #cur-ring {
     border-top-color: var(--gold);
     border-right-color: var(--saff);
     animation: rspin 1.4s linear infinite;
-    box-shadow: 0 0 28px rgba(245, 197, 24, .22)
+    box-shadow: 0 0 28px rgba(245, 197, 24, .22);
+    will-change: transform;
 }
 
 .lr:nth-child(2) {
     inset: 14px;
     border-bottom-color: var(--cyan);
     border-left-color: var(--violet);
-    animation: rspin .9s linear infinite reverse
+    animation: rspin .9s linear infinite reverse;
+    will-change: transform;
 }
 
 .lr:nth-child(3) {
     inset: 28px;
     border-top-color: var(--ember);
-    animation: rspin 1.8s linear infinite
+    animation: rspin 1.8s linear infinite;
+    will-change: transform;
 }
 
 .lc {
@@ -297,7 +314,8 @@ body.hovering #cur-ring {
     background: linear-gradient(90deg, transparent, rgba(245, 197, 24, .15) 30%, rgba(245, 197, 24, .5) 50%, rgba(245, 197, 24, .15) 70%, transparent);
     pointer-events: none;
     z-index: 2;
-    animation: scanline 8s ease-in-out infinite
+    animation: scanline 8s ease-in-out infinite;
+    will-change: transform, opacity;
 }
 
 .glow-line:nth-child(2) {
@@ -755,7 +773,8 @@ nav#nav.stuck {
     background: radial-gradient(ellipse, rgba(255, 109, 0, .12) 0%, rgba(245, 197, 24, .05) 35%, transparent 70%);
     border-radius: 50%;
     pointer-events: none;
-    animation: breathe 5s ease-in-out infinite
+    animation: breathe 5s ease-in-out infinite;
+    will-change: transform;
 }
 
 @keyframes breathe {
@@ -784,7 +803,8 @@ nav#nav.stuck {
     width: min(400px, 88vw);
     height: min(400px, 88vw);
     border-color: rgba(245, 197, 24, .08);
-    animation: orbspin 18s linear infinite
+    animation: orbspin 18s linear infinite;
+    will-change: transform;
 }
 
 .orb:nth-child(2) {
@@ -999,15 +1019,18 @@ nav#nav.stuck {
 .scpill {
     position: absolute;
     bottom: 34px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: fit-content;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
     opacity: 0;
     animation: sup .8s ease 2.2s forwards;
-    cursor: pointer
+    cursor: pointer;
+    z-index: 20;
 }
 
 .sctrack {
@@ -1215,24 +1238,44 @@ nav#nav.stuck {
     background: linear-gradient(135deg, var(--gold3), var(--gold))
 }
 
-/* Photo Avatar for Staff Coordinators */
-.cav-photo {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    margin: 0 auto 18px;
-    position: relative;
-    overflow: hidden;
-    border: 2.5px solid rgba(245, 197, 24, .25);
-    box-shadow: 0 0 20px rgba(245, 197, 24, .08), inset 0 0 20px rgba(0,0,0,.3);
-    transition: all .4s cubic-bezier(.2,.9,.3,1);
-    background: linear-gradient(135deg, #3D0010, var(--crimson));
+/* Spider-Verse Inspired Coordinator Gallery */
+.coord-grid-spider {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+    max-width: 900px;
+    margin: 40px auto 0;
+    padding: 0 20px;
 }
 
-.cc:hover .cav-photo {
-    border-color: var(--gold);
-    box-shadow: 0 0 28px rgba(245, 197, 24, .3), 0 0 60px rgba(245, 197, 24, .08);
-    transform: scale(1.05);
+.cc-spider {
+    position: relative;
+    height: 420px;
+    background: #0a0a0a;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    transition: box-shadow 0.3s ease;
+}
+
+.cc-spider:hover {
+    box-shadow: 0 20px 50px rgba(212, 175, 55, 0.15);
+}
+
+.cc-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+}
+
+.cav-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 .cav-img {
@@ -1240,55 +1283,87 @@ nav#nav.stuck {
     height: 100%;
     object-fit: cover;
     object-position: center top;
-    display: block;
-    transition: transform .4s cubic-bezier(.2,.9,.3,1), filter .4s;
-    filter: saturate(0.9) brightness(0.95);
+    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    filter: saturate(0.8) contrast(1.1);
 }
 
-.cc:hover .cav-img {
-    transform: scale(1.08);
-    filter: saturate(1) brightness(1);
+.cc-spider:hover .cav-img {
+    transform: scale(1.1);
+    filter: saturate(1.1) contrast(1.2);
+}
+
+.cav-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 100%);
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.cc-spider:hover .cav-overlay {
+    opacity: 1;
+}
+
+.cav-stippling {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(245, 197, 24, 0.15) 1px, transparent 1px);
+    background-size: 4px 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.cc-spider:hover .cav-stippling {
+    opacity: 1;
+}
+
+.cc-details {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 30px;
+    transform: translateY(10px);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 10;
+}
+
+.cc-spider:hover .cc-details {
+    transform: translateY(0);
 }
 
 .cname {
     font-family: 'Cinzel', serif;
-    font-size: .98rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #fff;
-    margin-bottom: 5px;
-    letter-spacing: .05em
+    margin-bottom: 4px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
 .crole {
     font-family: 'Orbitron', monospace;
-    font-size: .56rem;
-    color: var(--saff);
-    letter-spacing: .2em;
+    font-size: 0.7rem;
+    color: var(--gold);
+    letter-spacing: 0.3em;
     text-transform: uppercase;
-    margin-bottom: 8px
+    margin-bottom: 12px;
+    font-weight: 600;
 }
 
 .cdept {
-    font-size: .82rem;
-    color: var(--muted);
-    margin-bottom: 12px;
-    line-height: 1.5
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.4s ease 0.1s;
 }
 
-.cph {
-    font-family: 'Orbitron', monospace;
-    font-size: .73rem;
-    color: var(--gold);
-    text-decoration: none;
-    letter-spacing: .08em;
-    transition: color .3s;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px
-}
-
-.cph:hover {
-    color: #fff
+.cc-spider:hover .cdept {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /* ══════════════════════════════════════════ REGISTER NOW */
@@ -1590,6 +1665,8 @@ footer {
     pointer-events: none;
     z-index: 1;
     opacity: 0.15;
+    will-change: transform;
+    transform: translateZ(0);
     transition: transform 0.1s ease-out;
     filter: drop-shadow(0 0 10px var(--gold));
 }
@@ -1670,6 +1747,8 @@ footer {
     background: var(--gold);
     border-radius: 50%;
     filter: blur(1px) drop-shadow(0 0 5px var(--saff));
+    will-change: transform;
+    transform: translateZ(0);
 }
 
 .f-feather {

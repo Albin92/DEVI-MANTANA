@@ -3,9 +3,10 @@ import * as THREE from 'three';
 
 export default function ParticleCanvas() {
   const mountRef = useRef(null);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   useEffect(() => {
-    if (!mountRef.current) return;
+    if (isMobile || !mountRef.current) return;
 
     const scene = new THREE.Scene();
     
@@ -14,13 +15,13 @@ export default function ParticleCanvas() {
     camera.position.y = 10;
     camera.lookAt(0, 0, 0);
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: window.innerWidth > 768 });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1 : 2));
     mountRef.current.appendChild(renderer.domElement);
 
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 2000;
+    const particlesCount = window.innerWidth < 768 ? 600 : 2000;
     const posArray = new Float32Array(particlesCount * 3);
     const colorsArray = new Float32Array(particlesCount * 3);
 
@@ -55,7 +56,8 @@ export default function ParticleCanvas() {
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
 
-    const oceanGeometry = new THREE.PlaneGeometry(100, 100, 50, 50);
+    const segments = window.innerWidth < 768 ? 20 : 50;
+    const oceanGeometry = new THREE.PlaneGeometry(100, 100, segments, segments);
     const oceanMaterial = new THREE.MeshBasicMaterial({ 
       color: 0x1A0E24, 
       wireframe: true, 
@@ -104,13 +106,17 @@ export default function ParticleCanvas() {
     return () => {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationId);
-      if (mountRef.current && renderer.domElement) {
+      if (mountRef.current && renderer.domElement && mountRef.current.contains(renderer.domElement)) {
         mountRef.current.removeChild(renderer.domElement);
       }
       scene.clear();
       renderer.dispose();
     };
-  }, []);
+  }, [isMobile]);
+
+  if (isMobile) {
+    return <div className="absolute inset-0 z-0 bg-radial-gradient from-transparent via-bg-dark/50 to-bg-dark opacity-60 pointer-events-none" />;
+  }
 
   return <div ref={mountRef} className="absolute inset-0 z-0 pointer-events-none opacity-60 mix-blend-screen" />;
 }

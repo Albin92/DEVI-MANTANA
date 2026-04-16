@@ -8,7 +8,8 @@ export default function HomePage() {
 
   // Generate deterministic embers for the slow fire effect
   const embers = useMemo(() => {
-    return Array.from({ length: 45 }).map(() => ({
+    const isMobile = window.innerWidth < 768;
+    return Array.from({ length: isMobile ? 5 : 45 }).map(() => ({
       left: Math.random() * 100,
       size: Math.random() * 4 + 2,
       duration: Math.random() * 6 + 5,
@@ -33,6 +34,8 @@ export default function HomePage() {
     setTimeout(() => { s.style.transform = 'translateX(-50%) translateY(100px)'; setTimeout(() => s.remove(), 400) }, 3500);
   };
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   // Movie-poster title typography style
   const epicTitleStyle = {
     fontFamily: "'Cinzel Decorative', serif",
@@ -49,7 +52,7 @@ export default function HomePage() {
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
-    filter: "drop-shadow(0 20px 20px rgba(0,0,0,0.9)) drop-shadow(0 0 60px rgba(245, 197, 24, 0.3))",
+    filter: isMobile ? "drop-shadow(0 4px 6px rgba(0,0,0,0.9))" : "drop-shadow(0 20px 20px rgba(0,0,0,0.9)) drop-shadow(0 0 60px rgba(245, 197, 24, 0.3))",
     letterSpacing: "clamp(-1px, -0.3vw, -4px)",
     margin: "10px 0"
   };
@@ -58,7 +61,7 @@ export default function HomePage() {
     fontSize: "clamp(2.5rem, 8vw, 8rem)",
     WebkitTextFillColor: "var(--saff)",
     background: "none",
-    filter: "drop-shadow(0 0 40px rgba(255, 109, 0, 0.8))",
+    filter: isMobile ? "none" : "drop-shadow(0 0 40px rgba(255, 109, 0, 0.8))",
     marginInline: "15px"
   };
 
@@ -70,16 +73,16 @@ export default function HomePage() {
       transition={{ duration: 0.8 }}
       style={{ flexGrow: 1, position: 'relative', overflow: 'hidden', backgroundColor: 'var(--ink)' }}
     >
-      <section id="hero" style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+      <section id="hero" style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
 
         {/* LAYER 1: Deep Ethereal Shadow Character */}
         <div style={{ position: 'absolute', inset: -50, zIndex: 1, pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.3 }}>
           <motion.img
             src="/hero_bg_arjuna.png"
-            initial={{ filter: 'blur(30px)', scale: 1.1 }}
-            animate={{ filter: 'blur(4px)', scale: 1 }}
+            initial={{ filter: isMobile ? 'none' : 'blur(30px)', scale: 1.1 }}
+            animate={{ filter: isMobile ? 'none' : 'blur(4px)', scale: 1 }}
             transition={{ duration: 5, ease: "easeOut" }}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', mixBlendMode: 'screen' }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', mixBlendMode: isMobile ? 'normal' : 'screen' }}
             alt="Mythological Aura"
           />
           {/* Dark edge vignette so the character fades smoothly */}
@@ -110,7 +113,7 @@ export default function HomePage() {
                 height: emb.size,
                 background: '#f5c518',
                 borderRadius: '50%',
-                filter: 'blur(1px) drop-shadow(0 0 10px #ff6d00)'
+                filter: window.innerWidth < 768 ? 'none' : 'blur(1px) drop-shadow(0 0 10px #ff6d00)'
               }}
             />
           ))}
@@ -126,7 +129,7 @@ export default function HomePage() {
             className="hey"
             style={{ letterSpacing: '4px', textTransform: 'uppercase', fontSize: '0.8rem', color: 'var(--muted)' }}
           >
-            ✦ Intercollegiate IT Fest · Shree Devi College ✦
+            ✦ Intercollegiate IT Fest · Shree Devi College of Information Science ✦
           </motion.p>
 
           {/* THE GIANT THEMATIC MOVIE POSTER TITLE */}
