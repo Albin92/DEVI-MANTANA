@@ -142,7 +142,7 @@ export const events = [
   {
     id: 7,
     name: 'BRAHMASTRA',
-    subtitle: 'Gaming',
+    subtitle: 'Gaming(BGMI-BATTLEGROUND MOBILE INDIA)',
     imageIcon: '/logo/Gaming.png',
     category: 'Technical',
     tagline: 'COMPETE. CONQUER. DOMINATE.',
