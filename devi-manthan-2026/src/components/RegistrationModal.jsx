@@ -7,7 +7,7 @@ const EVENT_CONFIG = {
   "SUTRADHARA (IT Manager)": { members: 1, type: "Solo", weapon: "Buddhi" },
   "SPARDHA (Gaming)": { members: 2, type: "Team", weapon: "Astra" },
   "VYUHANTARA (Surprise Event)": { members: 2, type: "Team", weapon: "Maya" },
-  "CHAKRAVYUHA (Quiz)": { members: 2, type: "Team", weapon: "Vyuha" },
+  "CHAKRAVYUHA (Escape Room)": { members: 2, type: "Team", weapon: "Vyuha" },
   "VISHWAKARMA (Product Launch)": { members: 2, type: "Team", weapon: "Karta" },
   "ASTRACODERS (Web Designing)": { members: 2, type: "Team", weapon: "Shilpa" },
   "ROOPAYANTRA (Tech Walk)": { members: 6, type: "Team", weapon: "Drishti" }
@@ -31,9 +31,9 @@ const ThematicInput = ({ label, prefix, ...props }) => (
           {prefix}
         </span>
       )}
-      <input 
-        className={`thematic-input ${prefix ? 'with-prefix' : ''}`} 
-        {...props} 
+      <input
+        className={`thematic-input ${prefix ? 'with-prefix' : ''}`}
+        {...props}
       />
     </div>
     <motion.div
@@ -344,31 +344,31 @@ export default function RegistrationModal({ isOpen, onClose }) {
                             </h4>
                             <div className={`grid grid-cols-1 ${EVENT_CONFIG[eventName].members > 1 ? 'md:grid-cols-2' : ''} gap-4`}>
                               {Array.from({ length: EVENT_CONFIG[eventName].members }).map((_, idx) => (
-                                  <div key={idx} className="flex gap-2">
+                                <div key={idx} className="flex gap-2">
+                                  <input
+                                    type="text"
+                                    placeholder={`Participant ${idx + 1} Name`}
+                                    value={participants[eventName]?.[idx]?.name || ''}
+                                    onChange={(e) => handleParticipantChange(eventName, idx, 'name', e.target.value)}
+                                    required={idx === 0}
+                                    className="thematic-input w-1/2"
+                                  />
+                                  <div className="relative flex items-center w-1/2">
+                                    <span className="absolute left-4 text-zinc-400 font-rajdhani pointer-events-none text-sm">
+                                      +91
+                                    </span>
                                     <input
                                       type="text"
-                                      placeholder={`Participant ${idx + 1} Name`}
-                                      value={participants[eventName]?.[idx]?.name || ''}
-                                      onChange={(e) => handleParticipantChange(eventName, idx, 'name', e.target.value)}
+                                      placeholder="XXXXXXXXXX"
+                                      value={participants[eventName]?.[idx]?.phone || ''}
+                                      onChange={(e) => handleParticipantChange(eventName, idx, 'phone', e.target.value)}
                                       required={idx === 0}
-                                      className="thematic-input w-1/2"
+                                      pattern="\d{10}"
+                                      maxLength="10"
+                                      className="thematic-input w-full with-prefix"
                                     />
-                                    <div className="relative flex items-center w-1/2">
-                                      <span className="absolute left-4 text-zinc-400 font-rajdhani pointer-events-none text-sm">
-                                        +91
-                                      </span>
-                                      <input
-                                        type="text"
-                                        placeholder="XXXXXXXXXX"
-                                        value={participants[eventName]?.[idx]?.phone || ''}
-                                        onChange={(e) => handleParticipantChange(eventName, idx, 'phone', e.target.value)}
-                                        required={idx === 0}
-                                        pattern="\d{10}"
-                                        maxLength="10"
-                                        className="thematic-input w-full with-prefix"
-                                      />
-                                    </div>
                                   </div>
+                                </div>
                               ))}
                             </div>
                           </div>
