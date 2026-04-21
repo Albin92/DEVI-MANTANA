@@ -7,7 +7,7 @@ const EVENT_CONFIG = {
   "SUTRADHARA (IT Manager)": { members: 1, type: "Solo", weapon: "Buddhi" },
   "SPARDHA (Gaming)": { members: 2, type: "Team", weapon: "Astra" },
   "VYUHANTARA (Surprise Event)": { members: 2, type: "Team", weapon: "Maya" },
-  "CHAKRAVYUHA (Quiz)": { members: 2, type: "Team", weapon: "Vyuha" },
+  "CHAKRAVYUHA (Escape Room)": { members: 2, type: "Team", weapon: "Vyuha" },
   "VISHWAKARMA (Product Launch)": { members: 2, type: "Team", weapon: "Karta" },
   "ASTRACODERS (Web Designing)": { members: 2, type: "Team", weapon: "Shilpa" },
   "ROOPAYANTRA (Tech Walk)": { members: 6, type: "Team", weapon: "Drishti" }
@@ -31,9 +31,9 @@ const ThematicInput = ({ label, prefix, ...props }) => (
           {prefix}
         </span>
       )}
-      <input 
-        className={`thematic-input ${prefix ? 'with-prefix' : ''}`} 
-        {...props} 
+      <input
+        className={`thematic-input ${prefix ? 'with-prefix' : ''}`}
+        {...props}
       />
     </div>
     <motion.div
@@ -329,9 +329,8 @@ export default function RegistrationModal({ isOpen, onClose }) {
                         <div
                           key={eventName}
                           onClick={() => !isClosed && handleEventToggle(eventName)}
-                          className={`event-card-themed ${
-                            formData.events.includes(eventName) ? 'selected' : ''
-                          } ${isClosed ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          className={`event-card-themed ${formData.events.includes(eventName) ? 'selected' : ''
+                            } ${isClosed ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                           <div className="flex items-center justify-between">
                             <span className="font-cinzel text-sm text-white">

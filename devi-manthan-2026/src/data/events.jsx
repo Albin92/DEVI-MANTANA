@@ -4,7 +4,7 @@ export const events = [
   {
     id: 1,
     name: 'CHAKRAVYUHA',
-    subtitle: 'Quiz',
+    subtitle: 'Escape Room',
     imageIcon: '/logo/Quiz.PNG',
     category: 'Technical',
     tagline: 'Test your knowledge and emerge victorious.',

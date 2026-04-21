@@ -17,10 +17,10 @@ export default function About() {
   return (
     <section id="about" className="relative py-24 bg-bg-surface overflow-hidden">
       <div className="mandala-bg absolute inset-0 z-0" />
-      
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          
+
           {/* Left Column */}
           <div>
             <RevealWrapper>
@@ -29,7 +29,7 @@ export default function About() {
                 <span className="text-gold tracking-[4px] text-xs font-bold uppercase">The Legend</span>
               </div>
               <h2 className="font-cinzel text-4xl md:text-5xl text-gold mb-8 leading-tight">
-                What is <br/><span className="text-primary-light">Devi-Manthan?</span>
+                What is <br /><span className="text-primary-light">Devi-Manthan?</span>
               </h2>
             </RevealWrapper>
 
@@ -45,7 +45,7 @@ export default function About() {
                   "Be a deva or an asura — all are welcome on this battlefield of innovation."
                 </p>
               </div>
-              
+
               <div className="mt-8 inline-flex items-center gap-3 border border-accent/40 bg-accent/10 px-5 py-3 rounded-full text-accent font-raleway text-sm font-semibold">
                 <FaUsers className="text-lg" /> Open to all intercollegiate students
               </div>
