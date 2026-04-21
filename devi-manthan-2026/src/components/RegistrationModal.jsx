@@ -158,12 +158,24 @@ export default function RegistrationModal({ isOpen, onClose }) {
       return;
     }
 
-    // Calculate if they even have names filled in
-    const { count, formattedParticipants } = getCalculatedTotals();
-    if (count === 0) {
-      alert("ERROR: Please provide participant details for your selected events.");
-      return;
+    // Strict validation: every participant slot must have name + 10-digit phone
+    for (const eventName of formData.events) {
+      const slots = participants[eventName] || [];
+      const total = EVENT_CONFIG[eventName]?.members || 1;
+      for (let i = 0; i < total; i++) {
+        const p = slots[i];
+        if (!p || !p.name || !p.name.trim()) {
+          alert(`ERROR: Participant ${i + 1} name is required for ${eventName.includes(' (') ? eventName.split(' (')[1].replace(')', '') : eventName}.`);
+          return;
+        }
+        if (!p.phone || !/^\d{10}$/.test(p.phone.trim())) {
+          alert(`ERROR: Participant ${i + 1} phone number must be a valid 10-digit number for ${eventName.includes(' (') ? eventName.split(' (')[1].replace(')', '') : eventName}.`);
+          return;
+        }
+      }
     }
+
+    const { formattedParticipants } = getCalculatedTotals();
 
     setLoading(true);
     try {
@@ -374,10 +386,10 @@ export default function RegistrationModal({ isOpen, onClose }) {
                                 <div key={idx} className="flex flex-col gap-2">
                                   <input
                                     type="text"
-                                    placeholder={`Participant ${idx + 1} Name`}
+                                    placeholder={`Participant ${idx + 1} Name *`}
                                     value={participants[eventName]?.[idx]?.name || ''}
                                     onChange={(e) => handleParticipantChange(eventName, idx, 'name', e.target.value)}
-                                    required={idx === 0}
+                                    required
                                     className="thematic-input w-full"
                                   />
                                   <div className="relative flex items-center w-full">
@@ -386,10 +398,10 @@ export default function RegistrationModal({ isOpen, onClose }) {
                                     </span>
                                     <input
                                       type="text"
-                                      placeholder="XXXXXXXXXX"
+                                      placeholder="XXXXXXXXXX *"
                                       value={participants[eventName]?.[idx]?.phone || ''}
                                       onChange={(e) => handleParticipantChange(eventName, idx, 'phone', e.target.value)}
-                                      required={idx === 0}
+                                      required
                                       pattern="\d{10}"
                                       maxLength="10"
                                       className="thematic-input w-full with-prefix"
