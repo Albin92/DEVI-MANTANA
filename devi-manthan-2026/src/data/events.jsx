@@ -127,12 +127,11 @@ export const events = [
     description: 'Design and build responsive, creative websites in a timed competition.',
     rules: `1. 2 participants in each team and one team from a college.
 2. The event consists of 3 rounds.
-3. The total duration of the event is 1 hour 30 minutes.
-4. Participants must follow the instructions of the event coordinator.
-5. No discussion with other teams during the event.
-6. Time limits must be strictly followed.
-7. The decision of the judges will be final.
-8. Any form of malpractice will lead to disqualification.`,
+3. Participants must follow the instructions of the event coordinator.
+4. No discussion with other teams during the event.
+5. Time limits must be strictly followed.
+6. The decision of the judges will be final.
+7. Any form of malpractice will lead to disqualification.`,
     eventHeads: [
       { role: 'Student Coordinator', name: 'Albin Shaji', phone: '7510764691', photo: null },
       { role: 'Student Coordinator', name: 'Abdul Basith', phone: '8296664977', photo: null },

@@ -10,7 +10,7 @@ export default function About() {
   const stats = [
     { num: 11, label: 'Events' },
     { num: 2, label: 'Days' },
-    { num: 500, label: 'Students', suffix: '+' },
+    { num: 324, label: 'Students', suffix: '+' },
     { num: 200, label: 'Prize Pool', prefix: '₹', suffix: 'K+' }
   ];
 

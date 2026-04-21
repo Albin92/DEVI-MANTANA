@@ -64,6 +64,19 @@ export default function RegistrationModal({ isOpen, onClose }) {
   const [participants, setParticipants] = useState({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [closedEvents, setClosedEvents] = useState({}); // eventKey -> true if closed
+
+  // Fetch closed slots from Supabase
+  useEffect(() => {
+    if (!isOpen) return;
+    supabase.from('event_slots').select('event_key, is_open').then(({ data }) => {
+      if (data) {
+        const map = {};
+        data.forEach(r => { if (!r.is_open) map[r.event_key] = true; });
+        setClosedEvents(map);
+      }
+    });
+  }, [isOpen]);
 
   const embers = React.useMemo(() => {
     return [...Array(20)].map((_, i) => ({
@@ -308,22 +321,37 @@ export default function RegistrationModal({ isOpen, onClose }) {
                 <motion.div variants={sectionVariants} initial="hidden" animate="visible" transition={{ delay: 0.2 }}>
                   <SectionDivider title="02 — EVENT SELECTION" />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.keys(EVENT_CONFIG).map((eventName) => (
-                      <div
-                        key={eventName}
-                        onClick={() => handleEventToggle(eventName)}
-                        className={`event-card-themed ${formData.events.includes(eventName) ? 'selected' : ''}`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-cinzel text-sm text-white">
-                            {eventName.includes(' (') ? eventName.split(' (')[1].replace(')', '') : eventName}
-                          </span>
+                    {Object.keys(EVENT_CONFIG).map((eventName) => {
+                      // Derive the key: e.g. "CHAKRAVYUHA (Quiz)" -> "CHAKRAVYUHA"
+                      const eventKey = eventName.split(' (')[0].toUpperCase();
+                      const isClosed = closedEvents[eventKey];
+                      return (
+                        <div
+                          key={eventName}
+                          onClick={() => !isClosed && handleEventToggle(eventName)}
+                          className={`event-card-themed ${
+                            formData.events.includes(eventName) ? 'selected' : ''
+                          } ${isClosed ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-cinzel text-sm text-white">
+                              {eventName.includes(' (') ? eventName.split(' (')[1].replace(')', '') : eventName}
+                            </span>
+                            {isClosed && (
+                              <span className="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 bg-red-500/20 border border-red-500/30 text-red-400 rounded-full">
+                                FULL
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter">
+                            {isClosed
+                              ? 'Registration Closed'
+                              : `${EVENT_CONFIG[eventName].type} • ${EVENT_CONFIG[eventName].members} Participant${EVENT_CONFIG[eventName].members > 1 ? 's' : ''}`
+                            }
+                          </p>
                         </div>
-                        <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-tighter">
-                          {EVENT_CONFIG[eventName].type} • {EVENT_CONFIG[eventName].members} Participant{EVENT_CONFIG[eventName].members > 1 ? 's' : ''}
-                        </p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </motion.div>
 
@@ -344,31 +372,31 @@ export default function RegistrationModal({ isOpen, onClose }) {
                             </h4>
                             <div className={`grid grid-cols-1 ${EVENT_CONFIG[eventName].members > 1 ? 'md:grid-cols-2' : ''} gap-4`}>
                               {Array.from({ length: EVENT_CONFIG[eventName].members }).map((_, idx) => (
-                                  <div key={idx} className="flex gap-2">
+                                <div key={idx} className="flex flex-col gap-2">
+                                  <input
+                                    type="text"
+                                    placeholder={`Participant ${idx + 1} Name`}
+                                    value={participants[eventName]?.[idx]?.name || ''}
+                                    onChange={(e) => handleParticipantChange(eventName, idx, 'name', e.target.value)}
+                                    required={idx === 0}
+                                    className="thematic-input w-full"
+                                  />
+                                  <div className="relative flex items-center w-full">
+                                    <span className="absolute left-4 text-zinc-400 font-rajdhani pointer-events-none text-sm">
+                                      +91
+                                    </span>
                                     <input
                                       type="text"
-                                      placeholder={`Participant ${idx + 1} Name`}
-                                      value={participants[eventName]?.[idx]?.name || ''}
-                                      onChange={(e) => handleParticipantChange(eventName, idx, 'name', e.target.value)}
+                                      placeholder="XXXXXXXXXX"
+                                      value={participants[eventName]?.[idx]?.phone || ''}
+                                      onChange={(e) => handleParticipantChange(eventName, idx, 'phone', e.target.value)}
                                       required={idx === 0}
-                                      className="thematic-input w-1/2"
+                                      pattern="\d{10}"
+                                      maxLength="10"
+                                      className="thematic-input w-full with-prefix"
                                     />
-                                    <div className="relative flex items-center w-1/2">
-                                      <span className="absolute left-4 text-zinc-400 font-rajdhani pointer-events-none text-sm">
-                                        +91
-                                      </span>
-                                      <input
-                                        type="text"
-                                        placeholder="XXXXXXXXXX"
-                                        value={participants[eventName]?.[idx]?.phone || ''}
-                                        onChange={(e) => handleParticipantChange(eventName, idx, 'phone', e.target.value)}
-                                        required={idx === 0}
-                                        pattern="\d{10}"
-                                        maxLength="10"
-                                        className="thematic-input w-full with-prefix"
-                                      />
-                                    </div>
                                   </div>
+                                </div>
                               ))}
                             </div>
                           </div>
