@@ -131,7 +131,8 @@ export const events = [
 4. No discussion with other teams during the event.
 5. Time limits must be strictly followed.
 6. The decision of the judges will be final.
-7. Any form of malpractice will lead to disqualification.`,
+7. Any form of malpractice will lead to disqualification.
+8.the time duration for the event is 2hrs`,
     eventHeads: [
       { role: 'Student Coordinator', name: 'Albin Shaji', phone: '7510764691', photo: null },
       { role: 'Student Coordinator', name: 'Abdul Basith', phone: '8296664977', photo: null },

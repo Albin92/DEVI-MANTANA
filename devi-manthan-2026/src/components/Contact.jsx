@@ -62,9 +62,7 @@ export default function Contact() {
               </li>
             </ul>
 
-            <div className="w-32 h-32 border-2 border-dashed border-border-gold/60 rounded-lg flex flex-col items-center justify-center mt-6 p-2 text-text-muted hover:border-gold hover:text-gold transition-colors cursor-pointer bg-white/5">
-              <span className="text-xs text-center font-raleway uppercase tracking-widest leading-relaxed">Scan to<br />Register</span>
-            </div>
+
           </RevealWrapper>
 
         </div>
